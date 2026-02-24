@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Friendly ERP System</title>
+    <title>Premium ERP Inventory</title>
+    <!-- Standard CDNs -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .nav-active { background-color: #2563eb; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .nav-active { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
         .mobile-nav-active { color: #2563eb; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); }
+        [data-lucide] { width: 20px; height: 20px; transition: transform 0.2s ease; }
+        .hover-scale:hover [data-lucide] { transform: scale(1.1); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen pb-20 md:pb-0">
@@ -20,154 +24,254 @@
     <div class="flex flex-col md:flex-row min-h-screen">
         
         <!-- Desktop Sidebar -->
-        <aside class="w-64 bg-slate-900 text-white hidden md:flex flex-col shadow-xl">
-            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
-                <div class="bg-blue-600 p-2 rounded-lg">
-                    <i data-lucide="package" size="24"></i>
+        <aside class="w-72 bg-slate-900 text-white hidden md:flex flex-col shadow-2xl z-50">
+            <div class="p-8 border-b border-slate-800 flex items-center gap-4">
+                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-2.5 rounded-xl shadow-lg shadow-blue-500/20">
+                    <i data-lucide="layers" class="text-white"></i>
                 </div>
-                <h1 class="text-xl font-bold tracking-tight">ERP System</h1>
+                <div>
+                    <h1 class="text-lg font-extrabold tracking-tight leading-none">NEXUS</h1>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">ERP Solutions</p>
+                </div>
             </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <button onclick="switchTab('products')" id="btn-products" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-                    <i data-lucide="layout-dashboard" size="20"></i>
-                    <span class="font-medium">Inventory</span>
+            <nav class="flex-1 p-6 space-y-3">
+                <button onclick="switchTab('products')" id="btn-products" class="nav-btn w-full flex items-center gap-4 px-5 py-4 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all hover-scale">
+                    <i data-lucide="box"></i>
+                    <span class="font-semibold">Inventory Hub</span>
                 </button>
-                <button onclick="switchTab('dc_entry')" id="btn-dc_entry" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-                    <i data-lucide="file-text" size="20"></i>
-                    <span class="font-medium">DC Entry</span>
+                <button onclick="switchTab('dc_entry')" id="btn-dc_entry" class="nav-btn w-full flex items-center gap-4 px-5 py-4 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all hover-scale">
+                    <i data-lucide="clipboard-list"></i>
+                    <span class="font-semibold">DC Management</span>
                 </button>
-                <button onclick="switchTab('master')" id="btn-master" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-                    <i data-lucide="settings" size="20"></i>
-                    <span class="font-medium">Master</span>
+                <button onclick="switchTab('master')" id="btn-master" class="nav-btn w-full flex items-center gap-4 px-5 py-4 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all hover-scale">
+                    <i data-lucide="database"></i>
+                    <span class="font-semibold">Master Catalog</span>
                 </button>
             </nav>
+            <div class="p-6 border-t border-slate-800">
+                <div class="bg-slate-800/50 rounded-2xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-sm">AD</div>
+                    <div>
+                        <p class="text-xs font-bold">Admin User</p>
+                        <p class="text-[10px] text-slate-500">Superuser Access</p>
+                    </div>
+                </div>
+            </div>
         </aside>
 
         <!-- Mobile Bottom Nav -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around items-center px-2 py-3 md:hidden z-50">
-            <button onclick="switchTab('products')" id="m-btn-products" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
-                <i data-lucide="layout-dashboard" size="22"></i>
+        <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-slate-200 flex justify-around items-center px-4 py-4 md:hidden z-50">
+            <button onclick="switchTab('products')" id="m-btn-products" class="mobile-nav-btn flex flex-col items-center gap-1.5 text-slate-400">
+                <i data-lucide="box"></i>
                 <span class="text-[10px] font-bold uppercase tracking-wider">Inventory</span>
             </button>
-            <button onclick="switchTab('dc_entry')" id="m-btn-dc_entry" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
-                <i data-lucide="file-text" size="22"></i>
-                <span class="text-[10px] font-bold uppercase tracking-wider">DC Entry</span>
+            <button onclick="switchTab('dc_entry')" id="m-btn-dc_entry" class="mobile-nav-btn flex flex-col items-center gap-1.5 text-slate-400">
+                <i data-lucide="clipboard-list"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Entries</span>
             </button>
-            <button onclick="switchTab('master')" id="m-btn-master" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
-                <i data-lucide="settings" size="22"></i>
+            <button onclick="switchTab('master')" id="m-btn-master" class="mobile-nav-btn flex flex-col items-center gap-1.5 text-slate-400">
+                <i data-lucide="database"></i>
                 <span class="text-[10px] font-bold uppercase tracking-wider">Master</span>
             </button>
         </nav>
 
         <!-- Main Content -->
         <main class="flex-1 flex flex-col overflow-auto">
-            <header class="bg-white border-b border-slate-200 px-4 md:px-8 py-4 sticky top-0 z-40 shadow-sm flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="md:hidden bg-blue-600 p-1.5 rounded-md text-white">
-                        <i data-lucide="package" size="18"></i>
+            <header class="bg-white/70 backdrop-blur-md border-b border-slate-200 px-6 md:px-10 py-5 sticky top-0 z-40 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="md:hidden bg-gradient-to-br from-blue-600 to-indigo-700 p-2 rounded-lg text-white shadow-lg shadow-blue-500/30">
+                        <i data-lucide="layers" size="18"></i>
                     </div>
-                    <h2 id="current-tab-label" class="text-xl md:text-2xl font-black text-slate-800 tracking-tight uppercase">Inventory</h2>
+                    <h2 id="current-tab-label" class="text-xl md:text-2xl font-black text-slate-800 tracking-tight">Inventory Hub</h2>
                 </div>
-                <div class="hidden sm:flex items-center gap-4">
-                    <div class="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full flex items-center gap-2">
-                        <i data-lucide="calendar" size="14"></i>
-                        <span id="header-date"></span>
+                <div class="flex items-center gap-6">
+                    <div class="hidden sm:flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
+                        <i data-lucide="calendar" class="text-blue-600" size="16"></i>
+                        <span id="header-date" class="text-xs font-bold text-slate-600"></span>
                     </div>
+                    <button class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
+                        <i data-lucide="bell" size="18"></i>
+                    </button>
                 </div>
             </header>
 
-            <div class="p-4 md:p-8 max-w-7xl mx-auto w-full space-y-6">
+            <div class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8">
                 
                 <!-- Tab: Inventory -->
-                <div id="tab-products" class="tab-content active space-y-6">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                        <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            <i data-lucide="plus" size="16"></i> Quick Update
-                        </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                            <select id="quick-prod" class="h-11 border border-slate-300 rounded-xl px-3 text-sm bg-slate-50"></select>
-                            <input id="quick-qty" type="number" placeholder="Qty" class="h-11 border border-slate-300 rounded-xl px-4 text-sm bg-slate-50">
-                            <select id="quick-type" class="h-11 border border-slate-300 rounded-xl px-3 text-sm bg-slate-50">
-                                <option value="Add">Add</option>
-                                <option value="Subtract">Subtract</option>
-                            </select>
-                            <input id="quick-dc" type="text" placeholder="DC No." class="h-11 border border-slate-300 rounded-xl px-4 text-sm bg-slate-50">
-                            <button onclick="handleQuickUpdate()" class="h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg transition-transform active:scale-95">Update</button>
+                <div id="tab-products" class="tab-content active space-y-8 animate-in fade-in duration-500">
+                    <!-- Statistics Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-card p-6 rounded-[2rem] shadow-sm flex items-center gap-5">
+                            <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+                                <i data-lucide="package-check" size="28"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total SKU</p>
+                                <p class="text-2xl font-black text-slate-800">124 Items</p>
+                            </div>
+                        </div>
+                        <div class="glass-card p-6 rounded-[2rem] shadow-sm flex items-center gap-5">
+                            <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
+                                <i data-lucide="truck" size="28"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Active DC</p>
+                                <p class="text-2xl font-black text-slate-800">12 Pending</p>
+                            </div>
+                        </div>
+                        <div class="glass-card p-6 rounded-[2rem] shadow-sm flex items-center gap-5">
+                            <div class="w-14 h-14 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center">
+                                <i data-lucide="alert-circle" size="28"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Low Stock</p>
+                                <p class="text-2xl font-black text-slate-800">3 Alerts</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div class="p-5 border-b flex justify-between items-center">
-                            <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">Inventory Status</h3>
+                    <div class="glass-card p-6 rounded-[2rem] shadow-sm space-y-6">
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <i data-lucide="zap" size="16" class="text-yellow-500"></i> Lightning Update
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                            <div class="relative">
+                                <i data-lucide="tag" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size="14"></i>
+                                <select id="quick-prod" class="w-full h-12 pl-11 pr-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"></select>
+                            </div>
+                            <div class="relative">
+                                <i data-lucide="hash" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size="14"></i>
+                                <input id="quick-qty" type="number" placeholder="Quantity" class="w-full h-12 pl-11 pr-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
+                            </div>
+                            <div class="relative">
+                                <i data-lucide="arrow-up-right" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size="14"></i>
+                                <select id="quick-type" class="w-full h-12 pl-11 pr-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
+                                    <option value="Add">Add Stock</option>
+                                    <option value="Subtract">Remove Stock</option>
+                                </select>
+                            </div>
+                            <div class="relative">
+                                <i data-lucide="file-text" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size="14"></i>
+                                <input id="quick-dc" type="text" placeholder="DC Ref#" class="w-full h-12 pl-11 pr-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
+                            </div>
+                            <button onclick="handleQuickUpdate()" class="h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 transition-all active:scale-95 group">
+                                <i data-lucide="send" size="18" class="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                                Post Update
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[2rem] border border-slate-200 shadow-xl overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest flex items-center gap-2">
+                                <i data-lucide="layout-list" class="text-blue-600"></i> Stock Monitor
+                            </h3>
+                            <button class="p-2 hover:bg-white rounded-xl transition-colors border border-transparent hover:border-slate-200">
+                                <i data-lucide="download" size="18" class="text-slate-400"></i>
+                            </button>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <thead class="bg-slate-50 border-b border-slate-100 hidden sm:table-header-group">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-slate-50/80 border-b border-slate-100 hidden sm:table-header-group">
                                     <tr>
-                                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase">Product</th>
-                                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase text-center">DC Ref</th>
-                                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase text-right">Balance</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Item Description</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Referenced DC</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Available Qty</th>
                                     </tr>
                                 </thead>
-                                <tbody id="inventory-table-body" class="divide-y divide-slate-100"></tbody>
+                                <tbody id="inventory-table-body" class="divide-y divide-slate-50"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
                 <!-- Tab: DC Entry -->
-                <div id="tab-dc_entry" class="tab-content space-y-6">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-                        <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest flex items-center gap-2">
-                            <i data-lucide="file-text" class="text-blue-600"></i> New Transaction
-                        </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-slate-400 uppercase">DC Reference</label>
-                                <input id="dc-ref" type="text" class="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm">
+                <div id="tab-dc_entry" class="tab-content space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+                    <div class="glass-card p-8 rounded-[2.5rem] shadow-sm space-y-8">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-xl font-black text-slate-800 tracking-tight">Post Delivery Challan</h3>
+                                <p class="text-xs text-slate-500 font-semibold mt-1">Official inventory movement record entry</p>
                             </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-slate-400 uppercase">Client</label>
-                                <input id="dc-client" type="text" class="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white">
+                                <i data-lucide="file-plus" size="24"></i>
                             </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-slate-400 uppercase">Type</label>
-                                <select id="dc-type" class="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm">
-                                    <option value="IN">Stock IN</option>
-                                    <option value="OUT">Stock OUT</option>
-                                </select>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">DC Identification</label>
+                                <div class="relative">
+                                    <i data-lucide="hash" class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" size="16"></i>
+                                    <input id="dc-ref" type="text" placeholder="e.g. DC-2024-001" class="w-full h-14 pl-12 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500/20 outline-none">
+                                </div>
                             </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-slate-400 uppercase">Product</label>
-                                <select id="dc-prod-list" class="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm"></select>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Destination/Client</label>
+                                <div class="relative">
+                                    <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" size="16"></i>
+                                    <input id="dc-client" type="text" placeholder="Recipient Name" class="w-full h-14 pl-12 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500/20 outline-none">
+                                </div>
                             </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-slate-400 uppercase">Quantity</label>
-                                <input id="dc-qty" type="number" class="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Transaction Category</label>
+                                <div class="relative">
+                                    <i data-lucide="arrow-up-right" class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" size="16"></i>
+                                    <select id="dc-type" class="w-full h-14 pl-12 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500/20 outline-none">
+                                        <option value="IN">Inward Supply</option>
+                                        <option value="OUT">Outward Dispatch</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">SKU Selection</label>
+                                <div class="relative">
+                                    <i data-lucide="package" class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" size="16"></i>
+                                    <select id="dc-prod-list" class="w-full h-14 pl-12 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500/20 outline-none"></select>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Quantity Measurement</label>
+                                <div class="relative">
+                                    <i data-lucide="layers" class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" size="16"></i>
+                                    <input id="dc-qty" type="number" placeholder="0.00" class="w-full h-14 pl-12 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500/20 outline-none">
+                                </div>
                             </div>
                             <div class="flex items-end">
-                                <button onclick="handleDCSave()" class="w-full h-11 bg-emerald-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-md">
-                                    <i data-lucide="save" size="18"></i> Save Record
+                                <button onclick="handleDCSave()" class="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black flex items-center justify-center gap-3 shadow-xl shadow-emerald-500/20 transition-all hover:-translate-y-1 active:scale-95">
+                                    <i data-lucide="check-circle" size="20"></i> Commit Record
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <div id="transaction-feed" class="space-y-3"></div>
+                    <div id="transaction-feed" class="space-y-4"></div>
                 </div>
 
                 <!-- Tab: Master -->
-                <div id="tab-master" class="tab-content space-y-6">
-                    <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
-                        <h3 class="text-xl font-black mb-6 tracking-tight uppercase">Register Product</h3>
-                        <div class="flex flex-col sm:flex-row gap-4 relative z-10">
-                            <input id="m-name" type="text" placeholder="Brand Name" class="flex-1 bg-white/10 border border-white/20 rounded-2xl px-5 py-4 text-white placeholder-white/40">
-                            <input id="m-size" type="text" placeholder="Spec (e.g. 50kg)" class="w-full sm:w-40 bg-white/10 border border-white/20 rounded-2xl px-5 py-4 text-white placeholder-white/40">
-                            <button onclick="handleMasterAdd()" class="bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-2xl font-bold flex items-center justify-center transition-all shadow-xl">
-                                <i data-lucide="plus" size="24"></i>
-                            </button>
+                <div id="tab-master" class="tab-content space-y-8 animate-in slide-in-from-right-4 duration-500">
+                    <div class="bg-gradient-to-br from-slate-900 to-blue-900 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group">
+                        <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-blue-500/30 transition-all"></div>
+                        <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+                            <div class="max-w-md">
+                                <h3 class="text-3xl font-black mb-3 tracking-tighter">Register Catalog Item</h3>
+                                <p class="text-blue-200/60 font-medium leading-relaxed">Add new products to the master database to enable tracking across all DCs and warehouses.</p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                                <div class="relative flex-1 min-w-[200px]">
+                                    <i data-lucide="tag" class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/50" size="18"></i>
+                                    <input id="m-name" type="text" placeholder="Brand/Name" class="w-full bg-white/10 border border-white/10 rounded-2xl px-12 py-5 text-white placeholder-white/20 outline-none focus:bg-white/20 focus:ring-2 focus:ring-blue-400/50 transition-all font-bold">
+                                </div>
+                                <div class="relative w-full sm:w-40">
+                                    <i data-lucide="ruler" class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/50" size="18"></i>
+                                    <input id="m-size" type="text" placeholder="Spec" class="w-full bg-white/10 border border-white/10 rounded-2xl px-12 py-5 text-white placeholder-white/20 outline-none focus:bg-white/20 focus:ring-2 focus:ring-blue-400/50 transition-all font-bold">
+                                </div>
+                                <button onclick="handleMasterAdd()" class="bg-blue-500 hover:bg-blue-400 text-white p-5 rounded-2xl font-bold flex items-center justify-center transition-all shadow-xl shadow-blue-500/20 active:scale-95 group">
+                                    <i data-lucide="plus" size="28" class="group-hover:rotate-90 transition-transform"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div id="master-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                    <div id="master-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 </div>
 
             </div>
@@ -175,7 +279,22 @@
     </div>
 
     <script>
-        // State
+        // Enhanced Icons Map for items
+        const categoryIcons = {
+            'Cement': 'mountain',
+            'Steel': 'anvil',
+            'Bricks': 'layout-grid',
+            'Default': 'package'
+        };
+
+        function getBestIcon(name) {
+            for(let key in categoryIcons) {
+                if(name.toLowerCase().includes(key.toLowerCase())) return categoryIcons[key];
+            }
+            return categoryIcons.Default;
+        }
+
+        // State management
         let masterProducts = [
             { id: 1, name: 'Cement Ultra', size: '50kg' },
             { id: 2, name: 'Steel Rods', size: '10mm' },
@@ -188,64 +307,67 @@
             { id: 3, dcNumber: '4', customer: 'Global Infra', date: '2026-02-24', type: 'OUT', productName: 'Bricks A-Grade', size: 'Standard', quantity: 200 }
         ];
 
-        // Initialization
-        window.onload = () => {
-            document.getElementById('header-date').innerText = new Date().toLocaleDateString('en-GB', { dateStyle: 'medium' });
+        window.addEventListener('load', () => {
+            document.getElementById('header-date').innerText = new Date().toLocaleDateString('en-GB', { dateStyle: 'long' });
             renderAll();
             switchTab('products');
-            lucide.createIcons();
-        };
+        });
 
         function switchTab(tabId) {
-            // UI Update
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) targetTab.classList.add('active');
             
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
-            document.getElementById(`btn-${tabId}`).classList.add('nav-active');
+            const desktopBtn = document.getElementById(`btn-${tabId}`);
+            if (desktopBtn) desktopBtn.classList.add('nav-active');
 
             document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('mobile-nav-active'));
-            document.getElementById(`m-btn-${tabId}`).classList.add('mobile-nav-active');
+            const mobileBtn = document.getElementById(`m-btn-${tabId}`);
+            if (mobileBtn) mobileBtn.classList.add('mobile-nav-active');
 
-            const labels = { products: 'Inventory', dc_entry: 'DC Entry', master: 'Master' };
-            document.getElementById('current-tab-label').innerText = labels[tabId];
+            const labels = { products: 'Inventory Hub', dc_entry: 'DC Management', master: 'Master Catalog' };
+            document.getElementById('current-tab-label').innerText = labels[tabId] || 'System';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
-        // Render Functions
         function renderAll() {
             renderMaster();
             renderInventory();
             renderTransactionFeed();
             updateDropdowns();
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         function updateDropdowns() {
-            const html = '<option value="">Choose Product</option>' + 
-                         masterProducts.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
-            document.getElementById('quick-prod').innerHTML = html;
-            document.getElementById('dc-prod-list').innerHTML = html;
+            const options = '<option value="">Select Item</option>' + 
+                            masterProducts.map(p => `<option value="${p.name}">${p.name} (${p.size})</option>`).join('');
+            
+            const qp = document.getElementById('quick-prod');
+            const dcp = document.getElementById('dc-prod-list');
+            if (qp) qp.innerHTML = options;
+            if (dcp) dcp.innerHTML = options;
         }
 
         function renderMaster() {
             const container = document.getElementById('master-grid');
+            if (!container) return;
             container.innerHTML = masterProducts.map(p => `
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:border-blue-400 group">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-slate-50 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all flex items-center justify-center">
-                            <i data-lucide="package"></i>
+                <div class="glass-card p-6 rounded-[2.5rem] shadow-sm flex items-center justify-between hover:border-blue-400 group transition-all hover:shadow-xl hover:shadow-blue-500/5">
+                    <div class="flex items-center gap-5">
+                        <div class="w-14 h-14 rounded-[1.2rem] bg-slate-50 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all flex items-center justify-center shadow-inner">
+                            <i data-lucide="${getBestIcon(p.name)}"></i>
                         </div>
                         <div>
-                            <p class="font-black text-slate-800 tracking-tight">${p.name}</p>
-                            <p class="text-xs font-bold text-slate-400 uppercase">${p.size}</p>
+                            <p class="font-black text-slate-800 tracking-tight text-lg">${p.name}</p>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">${p.size}</p>
                         </div>
                     </div>
-                    <button onclick="deleteMaster(${p.id})" class="text-slate-300 hover:text-rose-600 p-2">
-                        <i data-lucide="trash-2"></i>
+                    <button onclick="deleteMaster(${p.id})" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition-all">
+                        <i data-lucide="trash-2" size="18"></i>
                     </button>
                 </div>
             `).join('');
-            lucide.createIcons();
         }
 
         function renderInventory() {
@@ -257,75 +379,85 @@
             });
 
             const container = document.getElementById('inventory-table-body');
+            if (!container) return;
             container.innerHTML = Object.values(stockMap).map(row => `
-                <tr class="group hover:bg-slate-50 flex flex-col sm:table-row p-4 sm:p-0">
-                    <td class="sm:px-6 sm:py-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center sm:hidden md:flex">
-                                <i data-lucide="package" size="16"></i>
+                <tr class="group hover:bg-blue-50/30 flex flex-col sm:table-row p-6 sm:p-0 transition-colors">
+                    <td class="sm:px-8 sm:py-6">
+                        <div class="flex items-center gap-5">
+                            <div class="w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-blue-600">
+                                <i data-lucide="${getBestIcon(row.name)}" size="20"></i>
                             </div>
                             <div>
-                                <p class="font-bold text-slate-800 leading-tight">${row.name}</p>
-                                <p class="text-[10px] text-slate-400 font-bold uppercase">${row.size}</p>
+                                <p class="font-extrabold text-slate-800 leading-tight">${row.name}</p>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${row.size}</p>
                             </div>
                         </div>
                     </td>
-                    <td class="sm:px-6 sm:py-4 mt-2 sm:mt-0 flex sm:table-cell items-center justify-between sm:text-center">
-                        <span class="sm:hidden text-[10px] font-black text-slate-400 uppercase">DC Number</span>
-                        <span class="px-2 py-1 bg-slate-100 rounded text-xs font-mono font-bold text-slate-600">#${row.dcNo}</span>
+                    <td class="sm:px-8 sm:py-6 mt-4 sm:mt-0 flex sm:table-cell items-center justify-between sm:text-center">
+                        <span class="sm:hidden text-[10px] font-black text-slate-400 uppercase">DC Ref</span>
+                        <span class="px-4 py-1.5 bg-blue-50 border border-blue-100 rounded-full text-xs font-black text-blue-700">#${row.dcNo}</span>
                     </td>
-                    <td class="sm:px-6 sm:py-4 mt-1 sm:mt-0 text-right flex sm:table-cell items-center justify-between">
-                        <span class="sm:hidden text-[10px] font-black text-slate-400 uppercase">Balance</span>
-                        <span class="text-sm font-black ${row.stock > 0 ? 'text-emerald-600' : 'text-rose-600'}">
-                            ${row.stock.toLocaleString()} units
-                        </span>
+                    <td class="sm:px-8 sm:py-6 mt-2 sm:mt-0 text-right flex sm:table-cell items-center justify-between">
+                        <span class="sm:hidden text-[10px] font-black text-slate-400 uppercase tracking-widest">Balance</span>
+                        <div>
+                            <span class="text-base font-black ${row.stock > 0 ? 'text-emerald-600' : 'text-rose-600'}">
+                                ${row.stock.toLocaleString()}
+                            </span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase ml-1">Units</span>
+                        </div>
                     </td>
                 </tr>
             `).join('');
-            lucide.createIcons();
         }
 
         function renderTransactionFeed() {
             const container = document.getElementById('transaction-feed');
-            container.innerHTML = '<h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Recent Activity</h4>' + 
+            if (!container) return;
+            container.innerHTML = '<h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-4 mb-4">Live Transaction Log</h4>' + 
             dcEntries.map(entry => `
-                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between group">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center ${entry.type === 'IN' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}">
-                            <i data-lucide="${entry.type === 'IN' ? 'trending-up' : 'trending-down'}"></i>
+                <div class="bg-white p-5 rounded-[1.5rem] border border-slate-200 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-all">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center ${entry.type === 'IN' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}">
+                            <i data-lucide="${entry.type === 'IN' ? 'plus-circle' : 'minus-circle'}" size="24"></i>
                         </div>
                         <div>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-3">
                                 <p class="font-black text-slate-800">${entry.productName}</p>
-                                <span class="text-[10px] font-bold text-slate-400 font-mono tracking-tighter">#${entry.dcNumber}</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 rounded text-slate-500 uppercase">#${entry.dcNumber}</span>
                             </div>
-                            <p class="text-xs text-slate-500 font-medium">${entry.customer || 'Direct Entry'} • ${entry.date}</p>
+                            <p class="text-[11px] text-slate-500 font-bold mt-1 flex items-center gap-2">
+                                <i data-lucide="user" size="10"></i> ${entry.customer || 'Internal'} 
+                                <span class="text-slate-200">|</span> 
+                                <i data-lucide="clock" size="10"></i> ${entry.date}
+                            </p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="font-black ${entry.type === 'IN' ? 'text-emerald-600' : 'text-rose-600'}">
+                        <p class="text-lg font-black ${entry.type === 'IN' ? 'text-emerald-600' : 'text-rose-600'}">
                             ${entry.type === 'IN' ? '+' : '-'}${entry.quantity}
                         </p>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${entry.type === 'IN' ? 'Received' : 'Dispatched'}</p>
                     </div>
                 </div>
             `).join('');
-            lucide.createIcons();
         }
 
-        // Event Handlers
         function handleQuickUpdate() {
             const name = document.getElementById('quick-prod').value;
             const qty = document.getElementById('quick-qty').value;
             const dc = document.getElementById('quick-dc').value;
-            const type = document.getElementById('quick-type').value === 'Add' ? 'IN' : 'OUT';
+            const typeSelection = document.getElementById('quick-type').value;
+            const type = typeSelection === 'Add' ? 'IN' : 'OUT';
 
             if(!name || !qty || !dc) return;
 
             const prod = masterProducts.find(p => p.name === name);
+            if (!prod) return;
+
             dcEntries.unshift({
                 id: Date.now(),
                 dcNumber: dc,
-                customer: 'Quick Update',
+                customer: 'System Quick Entry',
                 date: new Date().toISOString().split('T')[0],
                 type: type,
                 productName: name,
@@ -347,6 +479,8 @@
             if(!dc || !prodName || !qty) return;
 
             const prod = masterProducts.find(p => p.name === prodName);
+            if (!prod) return;
+
             dcEntries.unshift({
                 id: Date.now(),
                 dcNumber: dc,
@@ -358,18 +492,22 @@
                 quantity: Number(qty)
             });
             renderAll();
-            // Reset
-            ['dc-ref', 'dc-client', 'dc-qty'].forEach(id => document.getElementById(id).value = '');
+            ['dc-ref', 'dc-client', 'dc-qty'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
         }
 
         function handleMasterAdd() {
-            const name = document.getElementById('m-name').value;
-            const size = document.getElementById('m-size').value;
+            const nameEl = document.getElementById('m-name');
+            const sizeEl = document.getElementById('m-size');
+            const name = nameEl.value;
+            const size = sizeEl.value;
             if(!name || !size) return;
             masterProducts.push({ id: Date.now(), name, size });
             renderAll();
-            document.getElementById('m-name').value = '';
-            document.getElementById('m-size').value = '';
+            nameEl.value = '';
+            sizeEl.value = '';
         }
 
         function deleteMaster(id) {
