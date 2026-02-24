@@ -1,494 +1,381 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  Package, 
-  FileText, 
-  Settings, 
-  Plus, 
-  Search, 
-  Filter, 
-  Save, 
-  Edit2, 
-  TrendingUp,
-  TrendingDown,
-  Trash2,
-  Calendar,
-  User,
-  Hash,
-  Menu,
-  X,
-  ChevronRight
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Friendly ERP System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .nav-active { background-color: #2563eb; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .mobile-nav-active { color: #2563eb; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen pb-20 md:pb-0">
 
-// Main Application Component
-export default function App() {
-  const [activeTab, setActiveTab] = useState('products');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  // State Management
-  const [masterProducts, setMasterProducts] = useState([
-    { id: 1, name: 'Cement Ultra', size: '50kg' },
-    { id: 2, name: 'Steel Rods', size: '10mm' },
-    { id: 3, name: 'Bricks A-Grade', size: 'Standard' }
-  ]);
-
-  const [dcEntries, setDcEntries] = useState([
-    { id: 1, dcNumber: '8', customer: 'Build-IT Corp', date: '2026-02-24', type: 'IN', productName: 'Cement Ultra', size: '50kg', quantity: 50 },
-    { id: 2, dcNumber: '4', customer: 'Global Infra', date: '2026-02-24', type: 'OUT', productName: 'Steel Rods', size: '10mm', quantity: 100 },
-    { id: 3, dcNumber: '4', customer: 'Global Infra', date: '2026-02-24', type: 'OUT', productName: 'Bricks A-Grade', size: 'Standard', quantity: 200 }
-  ]);
-
-  // Derived State: Stock Calculation
-  const productStock = useMemo(() => {
-    const stockMap = {};
-    dcEntries.forEach(entry => {
-      const key = `${entry.productName}-${entry.size}-${entry.dcNumber}`;
-      if (!stockMap[key]) {
-        stockMap[key] = { 
-          name: entry.productName, 
-          size: entry.size, 
-          dcNo: entry.dcNumber, 
-          stock: 0 
-        };
-      }
-      if (entry.type === 'IN') {
-        stockMap[key].stock += Number(entry.quantity);
-      } else {
-        stockMap[key].stock -= Number(entry.quantity);
-      }
-    });
-    return Object.values(stockMap);
-  }, [dcEntries]);
-
-  const navItems = [
-    { id: 'products', label: 'Inventory', icon: Package },
-    { id: 'dc_entry', label: 'DC Entry', icon: FileText },
-    { id: 'master', label: 'Master', icon: Settings },
-  ];
-
-  const CurrentLabel = navItems.find(i => i.id === activeTab)?.label;
-
-  return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900 pb-20 md:pb-0">
-      <div className="flex flex-1 overflow-hidden">
+    <div class="flex flex-col md:flex-row min-h-screen">
         
-        {/* Desktop Sidebar */}
-        <aside className="w-64 bg-slate-900 text-white flex flex-col shadow-xl hidden md:flex">
-          <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-            <div className="bg-blue-600 p-2 rounded-lg">
-              <Package size={24} />
+        <!-- Desktop Sidebar -->
+        <aside class="w-64 bg-slate-900 text-white hidden md:flex flex-col shadow-xl">
+            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+                <div class="bg-blue-600 p-2 rounded-lg">
+                    <i data-lucide="package" size="24"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight">ERP System</h1>
             </div>
-            <h1 className="text-xl font-bold tracking-tight">ERP System</h1>
-          </div>
-          <nav className="flex-1 p-4 space-y-2">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                  activeTab === item.id 
-                    ? 'bg-blue-600 text-white shadow-lg' 
-                    : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-                }`}
-              >
-                <item.icon size={20} />
-                <span className="font-medium">{item.label}</span>
-              </button>
-            ))}
-          </nav>
+            <nav class="flex-1 p-4 space-y-2">
+                <button onclick="switchTab('products')" id="btn-products" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                    <i data-lucide="layout-dashboard" size="20"></i>
+                    <span class="font-medium">Inventory</span>
+                </button>
+                <button onclick="switchTab('dc_entry')" id="btn-dc_entry" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                    <i data-lucide="file-text" size="20"></i>
+                    <span class="font-medium">DC Entry</span>
+                </button>
+                <button onclick="switchTab('master')" id="btn-master" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                    <i data-lucide="settings" size="20"></i>
+                    <span class="font-medium">Master</span>
+                </button>
+            </nav>
         </aside>
 
-        {/* Mobile Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around items-center px-2 py-3 md:hidden z-50">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center gap-1 transition-colors ${
-                activeTab === item.id ? 'text-blue-600' : 'text-slate-400'
-              }`}
-            >
-              <item.icon size={22} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-              <span className="text-[10px] font-bold uppercase tracking-wider">{item.label}</span>
+        <!-- Mobile Bottom Nav -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around items-center px-2 py-3 md:hidden z-50">
+            <button onclick="switchTab('products')" id="m-btn-products" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+                <i data-lucide="layout-dashboard" size="22"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Inventory</span>
             </button>
-          ))}
+            <button onclick="switchTab('dc_entry')" id="m-btn-dc_entry" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+                <i data-lucide="file-text" size="22"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider">DC Entry</span>
+            </button>
+            <button onclick="switchTab('master')" id="m-btn-master" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+                <i data-lucide="settings" size="22"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Master</span>
+            </button>
         </nav>
 
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col overflow-auto">
-          {/* Top Header */}
-          <header className="bg-white border-b border-slate-200 px-4 md:px-8 py-4 sticky top-0 z-40 shadow-sm">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="md:hidden bg-blue-600 p-1.5 rounded-md text-white">
-                  <Package size={18} />
-                </div>
-                <h2 className="text-xl md:text-2xl font-black text-slate-800 tracking-tight uppercase">
-                  {CurrentLabel}
-                </h2>
-              </div>
-              <div className="hidden sm:flex items-center gap-4">
-                <div className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full flex items-center gap-2">
-                  <Calendar size={14} />
-                  {new Date().toLocaleDateString('en-GB', { dateStyle: 'medium' })}
-                </div>
-              </div>
-            </div>
-          </header>
-
-          <div className="p-4 md:p-8 max-w-7xl mx-auto w-full space-y-6">
-            {activeTab === 'products' && (
-              <ProductsView 
-                productStock={productStock} 
-                dcEntries={dcEntries} 
-                setDcEntries={setDcEntries}
-                masterProducts={masterProducts}
-              />
-            )}
-            {activeTab === 'dc_entry' && (
-              <DCEntryView 
-                dcEntries={dcEntries} 
-                setDcEntries={setDcEntries} 
-                masterProducts={masterProducts}
-              />
-            )}
-            {activeTab === 'master' && (
-              <MasterControlView 
-                masterProducts={masterProducts} 
-                setMasterProducts={setMasterProducts} 
-              />
-            )}
-          </div>
-        </main>
-      </div>
-    </div>
-  );
-}
-
-// --- SUB-COMPONENTS ---
-
-function ProductsView({ productStock, dcEntries, setDcEntries, masterProducts }) {
-  const [formData, setFormData] = useState({ productName: '', quantity: '', type: 'Add', dcNumber: '' });
-  const [filters, setFilters] = useState({ name: 'All Names', dc: 'All DC Numbers' });
-
-  const handleUpdate = () => {
-    if (!formData.productName || !formData.quantity || !formData.dcNumber) return;
-    const prod = masterProducts.find(p => p.name === formData.productName);
-    const newEntry = {
-      id: Date.now(),
-      dcNumber: formData.dcNumber,
-      customer: 'Quick Update',
-      date: new Date().toISOString().split('T')[0],
-      type: formData.type === 'Add' ? 'IN' : 'OUT',
-      productName: formData.productName,
-      size: prod?.size || '-',
-      quantity: Number(formData.quantity)
-    };
-    setDcEntries([...dcEntries, newEntry]);
-    setFormData({ productName: '', quantity: '', type: 'Add', dcNumber: '' });
-  };
-
-  const filteredStock = useMemo(() => {
-    return productStock.filter(item => {
-      const nameMatch = filters.name === 'All Names' || item.name === filters.name;
-      const dcMatch = filters.dc === 'All DC Numbers' || item.dcNo === filters.dc;
-      return nameMatch && dcMatch;
-    });
-  }, [productStock, filters]);
-
-  return (
-    <div className="space-y-6">
-      {/* Mobile-First Input Form */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-        <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-          <Plus size={16} /> Quick Update
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="col-span-1 sm:col-span-2 lg:col-span-1">
-            <select 
-              className="w-full h-11 border border-slate-300 rounded-xl px-3 text-sm bg-slate-50 focus:ring-2 focus:ring-blue-500"
-              value={formData.productName}
-              onChange={(e) => setFormData({...formData, productName: e.target.value})}
-            >
-              <option value="">Choose Product</option>
-              {masterProducts.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
-            </select>
-          </div>
-          <input 
-            type="number" 
-            placeholder="Qty"
-            className="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm bg-slate-50"
-            value={formData.quantity}
-            onChange={(e) => setFormData({...formData, quantity: e.target.value})}
-          />
-          <select 
-            className="w-full h-11 border border-slate-300 rounded-xl px-3 text-sm bg-slate-50"
-            value={formData.type}
-            onChange={(e) => setFormData({...formData, type: e.target.value})}
-          >
-            <option>Add</option>
-            <option>Subtract</option>
-          </select>
-          <input 
-            type="text" 
-            placeholder="DC No."
-            className="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm bg-slate-50"
-            value={formData.dcNumber}
-            onChange={(e) => setFormData({...formData, dcNumber: e.target.value})}
-          />
-          <button 
-            onClick={handleUpdate}
-            className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg transition-transform active:scale-95"
-          >
-            Update
-          </button>
-        </div>
-      </div>
-
-      {/* Inventory Cards / Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-5 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-           <h3 className="font-black text-slate-800 text-sm uppercase tracking-widest">Inventory Status</h3>
-           <div className="flex gap-2 w-full sm:w-auto">
-             <select 
-               className="flex-1 sm:flex-none text-xs border border-slate-200 rounded-lg px-3 py-2 bg-slate-50"
-               value={filters.name}
-               onChange={(e) => setFilters({...filters, name: e.target.value})}
-             >
-               <option>All Names</option>
-               {masterProducts.map(p => <option key={p.id}>{p.name}</option>)}
-             </select>
-           </div>
-        </div>
-
-        {/* Responsive Table/Card Layout */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-slate-50 border-b border-slate-100 hidden sm:table-header-group">
-              <tr>
-                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase">Product</th>
-                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase">DC Ref</th>
-                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase text-right">Balance</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredStock.map((row, idx) => (
-                <tr key={idx} className="group hover:bg-slate-50 transition-colors flex flex-col sm:table-row p-4 sm:p-0">
-                  <td className="sm:px-6 sm:py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center sm:hidden md:flex">
-                        <Package size={16} />
-                      </div>
-                      <div>
-                        <p className="font-bold text-slate-800 leading-tight">{row.name}</p>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase">{row.size}</p>
-                      </div>
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-auto">
+            <header class="bg-white border-b border-slate-200 px-4 md:px-8 py-4 sticky top-0 z-40 shadow-sm flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="md:hidden bg-blue-600 p-1.5 rounded-md text-white">
+                        <i data-lucide="package" size="18"></i>
                     </div>
-                  </td>
-                  <td className="sm:px-6 sm:py-4 mt-2 sm:mt-0 flex sm:table-cell items-center justify-between">
-                     <span className="sm:hidden text-[10px] font-black text-slate-400 uppercase">DC Number</span>
-                     <span className="px-2 py-1 bg-slate-100 rounded text-xs font-mono font-bold text-slate-600">#{row.dcNo}</span>
-                  </td>
-                  <td className="sm:px-6 sm:py-4 mt-1 sm:mt-0 text-right flex sm:table-cell items-center justify-between">
-                    <span className="sm:hidden text-[10px] font-black text-slate-400 uppercase">Balance</span>
-                    <span className={`text-sm font-black ${row.stock > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                      {row.stock.toLocaleString()} units
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DCEntryView({ dcEntries, setDcEntries, masterProducts }) {
-  const [form, setForm] = useState({
-    dcNumber: '', customer: '', date: new Date().toISOString().split('T')[0],
-    type: 'IN', product: '', qty: ''
-  });
-
-  const handleSave = () => {
-    if (!form.dcNumber || !form.product || !form.qty) return;
-    const prod = masterProducts.find(p => p.name === form.product);
-    const newEntry = {
-      id: Date.now(), ...form,
-      productName: form.product,
-      size: prod?.size || '-',
-      quantity: Number(form.qty)
-    };
-    setDcEntries([newEntry, ...dcEntries]);
-    setForm({ ...form, dcNumber: '', qty: '', product: '' });
-  };
-
-  return (
-    <div className="space-y-6">
-      {/* Mobile Optimized Form */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-        <h3 className="font-black text-slate-800 text-sm uppercase tracking-widest flex items-center gap-2">
-          <FileText size={18} className="text-blue-600" /> New Transaction
-        </h3>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <div className="space-y-1">
-            <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-tighter">DC Reference</label>
-            <input 
-              type="text" 
-              className="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm focus:ring-2 focus:ring-blue-500"
-              placeholder="e.g. DC-1002"
-              value={form.dcNumber}
-              onChange={(e) => setForm({...form, dcNumber: e.target.value})}
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-tighter">Entity / Client</label>
-            <input 
-              type="text" 
-              className="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm focus:ring-2 focus:ring-blue-500"
-              placeholder="Company Name"
-              value={form.customer}
-              onChange={(e) => setForm({...form, customer: e.target.value})}
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-tighter">Direction</label>
-            <div className="flex bg-slate-100 p-1 rounded-xl">
-              <button 
-                onClick={() => setForm({...form, type: 'IN'})}
-                className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${form.type === 'IN' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-400'}`}
-              >Stock IN</button>
-              <button 
-                onClick={() => setForm({...form, type: 'OUT'})}
-                className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${form.type === 'OUT' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-400'}`}
-              >Stock OUT</button>
-            </div>
-          </div>
-          <div className="space-y-1">
-            <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-tighter">Select Product</label>
-            <select 
-              className="w-full h-11 border border-slate-300 rounded-xl px-3 text-sm bg-white"
-              value={form.product}
-              onChange={(e) => setForm({...form, product: e.target.value})}
-            >
-              <option value="">-- Catalog --</option>
-              {masterProducts.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
-            </select>
-          </div>
-          <div className="space-y-1">
-            <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-tighter">Quantity</label>
-            <input 
-              type="number" 
-              className="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm"
-              placeholder="0.00"
-              value={form.qty}
-              onChange={(e) => setForm({...form, qty: e.target.value})}
-            />
-          </div>
-          <div className="flex items-end">
-            <button 
-              onClick={handleSave}
-              className="w-full h-11 bg-emerald-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all shadow-md active:scale-95"
-            >
-              <Save size={18} /> Save Record
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Transaction Feed */}
-      <div className="space-y-3">
-        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Recent Activity</h4>
-        {dcEntries.map((entry) => (
-          <div key={entry.id} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between group animate-in slide-in-from-left-2 duration-300">
-            <div className="flex items-center gap-4">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${entry.type === 'IN' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                {entry.type === 'IN' ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <p className="font-black text-slate-800">{entry.productName}</p>
-                  <span className="text-[10px] font-bold text-slate-400 font-mono tracking-tighter">#{entry.dcNumber}</span>
+                    <h2 id="current-tab-label" class="text-xl md:text-2xl font-black text-slate-800 tracking-tight uppercase">Inventory</h2>
                 </div>
-                <p className="text-xs text-slate-500 font-medium">{entry.customer || 'Direct Entry'} • {entry.date}</p>
-              </div>
+                <div class="hidden sm:flex items-center gap-4">
+                    <div class="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full flex items-center gap-2">
+                        <i data-lucide="calendar" size="14"></i>
+                        <span id="header-date"></span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-4 md:p-8 max-w-7xl mx-auto w-full space-y-6">
+                
+                <!-- Tab: Inventory -->
+                <div id="tab-products" class="tab-content active space-y-6">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <i data-lucide="plus" size="16"></i> Quick Update
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                            <select id="quick-prod" class="h-11 border border-slate-300 rounded-xl px-3 text-sm bg-slate-50"></select>
+                            <input id="quick-qty" type="number" placeholder="Qty" class="h-11 border border-slate-300 rounded-xl px-4 text-sm bg-slate-50">
+                            <select id="quick-type" class="h-11 border border-slate-300 rounded-xl px-3 text-sm bg-slate-50">
+                                <option value="Add">Add</option>
+                                <option value="Subtract">Subtract</option>
+                            </select>
+                            <input id="quick-dc" type="text" placeholder="DC No." class="h-11 border border-slate-300 rounded-xl px-4 text-sm bg-slate-50">
+                            <button onclick="handleQuickUpdate()" class="h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg transition-transform active:scale-95">Update</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="p-5 border-b flex justify-between items-center">
+                            <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">Inventory Status</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-100 hidden sm:table-header-group">
+                                    <tr>
+                                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase">Product</th>
+                                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase text-center">DC Ref</th>
+                                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase text-right">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventory-table-body" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: DC Entry -->
+                <div id="tab-dc_entry" class="tab-content space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+                        <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest flex items-center gap-2">
+                            <i data-lucide="file-text" class="text-blue-600"></i> New Transaction
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase">DC Reference</label>
+                                <input id="dc-ref" type="text" class="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase">Client</label>
+                                <input id="dc-client" type="text" class="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase">Type</label>
+                                <select id="dc-type" class="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm">
+                                    <option value="IN">Stock IN</option>
+                                    <option value="OUT">Stock OUT</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase">Product</label>
+                                <select id="dc-prod-list" class="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm"></select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase">Quantity</label>
+                                <input id="dc-qty" type="number" class="w-full h-11 border border-slate-300 rounded-xl px-4 text-sm">
+                            </div>
+                            <div class="flex items-end">
+                                <button onclick="handleDCSave()" class="w-full h-11 bg-emerald-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-md">
+                                    <i data-lucide="save" size="18"></i> Save Record
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="transaction-feed" class="space-y-3"></div>
+                </div>
+
+                <!-- Tab: Master -->
+                <div id="tab-master" class="tab-content space-y-6">
+                    <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
+                        <h3 class="text-xl font-black mb-6 tracking-tight uppercase">Register Product</h3>
+                        <div class="flex flex-col sm:flex-row gap-4 relative z-10">
+                            <input id="m-name" type="text" placeholder="Brand Name" class="flex-1 bg-white/10 border border-white/20 rounded-2xl px-5 py-4 text-white placeholder-white/40">
+                            <input id="m-size" type="text" placeholder="Spec (e.g. 50kg)" class="w-full sm:w-40 bg-white/10 border border-white/20 rounded-2xl px-5 py-4 text-white placeholder-white/40">
+                            <button onclick="handleMasterAdd()" class="bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-2xl font-bold flex items-center justify-center transition-all shadow-xl">
+                                <i data-lucide="plus" size="24"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="master-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                </div>
+
             </div>
-            <div className="text-right">
-              <p className={`font-black ${entry.type === 'IN' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                {entry.type === 'IN' ? '+' : '-'}{entry.quantity}
-              </p>
-              <div className="flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity mt-1">
-                <button className="text-slate-400 hover:text-blue-600"><Edit2 size={14}/></button>
-                <button className="text-slate-400 hover:text-rose-600"><Trash2 size={14}/></button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+        </main>
     </div>
-  );
-}
 
-function MasterControlView({ masterProducts, setMasterProducts }) {
-  const [newProduct, setNewProduct] = useState({ name: '', size: '' });
+    <script>
+        // State
+        let masterProducts = [
+            { id: 1, name: 'Cement Ultra', size: '50kg' },
+            { id: 2, name: 'Steel Rods', size: '10mm' },
+            { id: 3, name: 'Bricks A-Grade', size: 'Standard' }
+        ];
 
-  const handleAdd = () => {
-    if (!newProduct.name || !newProduct.size) return;
-    setMasterProducts([...masterProducts, { ...newProduct, id: Date.now() }]);
-    setNewProduct({ name: '', size: '' });
-  };
+        let dcEntries = [
+            { id: 1, dcNumber: '8', customer: 'Build-IT Corp', date: '2026-02-24', type: 'IN', productName: 'Cement Ultra', size: '50kg', quantity: 50 },
+            { id: 2, dcNumber: '4', customer: 'Global Infra', date: '2026-02-24', type: 'OUT', productName: 'Steel Rods', size: '10mm', quantity: 100 },
+            { id: 3, dcNumber: '4', customer: 'Global Infra', date: '2026-02-24', type: 'OUT', productName: 'Bricks A-Grade', size: 'Standard', quantity: 200 }
+        ];
 
-  return (
-    <div className="space-y-6">
-      <div className="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-48 h-48 bg-blue-600/20 rounded-full -mr-20 -mt-20 blur-3xl" />
-        <h3 className="text-xl font-black mb-6 relative z-10 tracking-tight uppercase">Register Product</h3>
-        <div className="flex flex-col sm:flex-row gap-4 relative z-10">
-          <input 
-            type="text" 
-            placeholder="Brand Name" 
-            className="flex-1 bg-white/10 border border-white/20 rounded-2xl px-5 py-4 text-white placeholder-white/40 outline-none focus:bg-white/20"
-            value={newProduct.name}
-            onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-          />
-          <input 
-            type="text" 
-            placeholder="Spec (e.g. 50kg)" 
-            className="w-full sm:w-40 bg-white/10 border border-white/20 rounded-2xl px-5 py-4 text-white placeholder-white/40 outline-none focus:bg-white/20"
-            value={newProduct.size}
-            onChange={(e) => setNewProduct({...newProduct, size: e.target.value})}
-          />
-          <button 
-            onClick={handleAdd}
-            className="bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-2xl font-bold flex items-center justify-center transition-all shadow-xl active:scale-95"
-          >
-            <Plus size={24} />
-          </button>
-        </div>
-      </div>
+        // Initialization
+        window.onload = () => {
+            document.getElementById('header-date').innerText = new Date().toLocaleDateString('en-GB', { dateStyle: 'medium' });
+            renderAll();
+            switchTab('products');
+            lucide.createIcons();
+        };
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {masterProducts.map((p) => (
-          <div key={p.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:border-blue-400 transition-colors group">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all flex items-center justify-center">
-                <Package size={24} />
-              </div>
-              <div>
-                <p className="font-black text-slate-800 tracking-tight">{p.name}</p>
-                <p className="text-xs font-bold text-slate-400 uppercase">{p.size}</p>
-              </div>
-            </div>
-            <button 
-              onClick={() => setMasterProducts(masterProducts.filter(item => item.id !== p.id))}
-              className="text-slate-300 hover:text-rose-600 transition-colors p-2"
-            >
-              <Trash2 size={20} />
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+        function switchTab(tabId) {
+            // UI Update
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
+            document.getElementById(`btn-${tabId}`).classList.add('nav-active');
+
+            document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('mobile-nav-active'));
+            document.getElementById(`m-btn-${tabId}`).classList.add('mobile-nav-active');
+
+            const labels = { products: 'Inventory', dc_entry: 'DC Entry', master: 'Master' };
+            document.getElementById('current-tab-label').innerText = labels[tabId];
+        }
+
+        // Render Functions
+        function renderAll() {
+            renderMaster();
+            renderInventory();
+            renderTransactionFeed();
+            updateDropdowns();
+            lucide.createIcons();
+        }
+
+        function updateDropdowns() {
+            const html = '<option value="">Choose Product</option>' + 
+                         masterProducts.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+            document.getElementById('quick-prod').innerHTML = html;
+            document.getElementById('dc-prod-list').innerHTML = html;
+        }
+
+        function renderMaster() {
+            const container = document.getElementById('master-grid');
+            container.innerHTML = masterProducts.map(p => `
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:border-blue-400 group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-slate-50 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all flex items-center justify-center">
+                            <i data-lucide="package"></i>
+                        </div>
+                        <div>
+                            <p class="font-black text-slate-800 tracking-tight">${p.name}</p>
+                            <p class="text-xs font-bold text-slate-400 uppercase">${p.size}</p>
+                        </div>
+                    </div>
+                    <button onclick="deleteMaster(${p.id})" class="text-slate-300 hover:text-rose-600 p-2">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderInventory() {
+            const stockMap = {};
+            dcEntries.forEach(entry => {
+                const key = `${entry.productName}-${entry.size}-${entry.dcNumber}`;
+                if (!stockMap[key]) stockMap[key] = { name: entry.productName, size: entry.size, dcNo: entry.dcNumber, stock: 0 };
+                stockMap[key].stock += (entry.type === 'IN' ? entry.quantity : -entry.quantity);
+            });
+
+            const container = document.getElementById('inventory-table-body');
+            container.innerHTML = Object.values(stockMap).map(row => `
+                <tr class="group hover:bg-slate-50 flex flex-col sm:table-row p-4 sm:p-0">
+                    <td class="sm:px-6 sm:py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center sm:hidden md:flex">
+                                <i data-lucide="package" size="16"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-800 leading-tight">${row.name}</p>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase">${row.size}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="sm:px-6 sm:py-4 mt-2 sm:mt-0 flex sm:table-cell items-center justify-between sm:text-center">
+                        <span class="sm:hidden text-[10px] font-black text-slate-400 uppercase">DC Number</span>
+                        <span class="px-2 py-1 bg-slate-100 rounded text-xs font-mono font-bold text-slate-600">#${row.dcNo}</span>
+                    </td>
+                    <td class="sm:px-6 sm:py-4 mt-1 sm:mt-0 text-right flex sm:table-cell items-center justify-between">
+                        <span class="sm:hidden text-[10px] font-black text-slate-400 uppercase">Balance</span>
+                        <span class="text-sm font-black ${row.stock > 0 ? 'text-emerald-600' : 'text-rose-600'}">
+                            ${row.stock.toLocaleString()} units
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderTransactionFeed() {
+            const container = document.getElementById('transaction-feed');
+            container.innerHTML = '<h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Recent Activity</h4>' + 
+            dcEntries.map(entry => `
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center ${entry.type === 'IN' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}">
+                            <i data-lucide="${entry.type === 'IN' ? 'trending-up' : 'trending-down'}"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <p class="font-black text-slate-800">${entry.productName}</p>
+                                <span class="text-[10px] font-bold text-slate-400 font-mono tracking-tighter">#${entry.dcNumber}</span>
+                            </div>
+                            <p class="text-xs text-slate-500 font-medium">${entry.customer || 'Direct Entry'} • ${entry.date}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-black ${entry.type === 'IN' ? 'text-emerald-600' : 'text-rose-600'}">
+                            ${entry.type === 'IN' ? '+' : '-'}${entry.quantity}
+                        </p>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // Event Handlers
+        function handleQuickUpdate() {
+            const name = document.getElementById('quick-prod').value;
+            const qty = document.getElementById('quick-qty').value;
+            const dc = document.getElementById('quick-dc').value;
+            const type = document.getElementById('quick-type').value === 'Add' ? 'IN' : 'OUT';
+
+            if(!name || !qty || !dc) return;
+
+            const prod = masterProducts.find(p => p.name === name);
+            dcEntries.unshift({
+                id: Date.now(),
+                dcNumber: dc,
+                customer: 'Quick Update',
+                date: new Date().toISOString().split('T')[0],
+                type: type,
+                productName: name,
+                size: prod.size,
+                quantity: Number(qty)
+            });
+            renderAll();
+            document.getElementById('quick-qty').value = '';
+            document.getElementById('quick-dc').value = '';
+        }
+
+        function handleDCSave() {
+            const dc = document.getElementById('dc-ref').value;
+            const client = document.getElementById('dc-client').value;
+            const type = document.getElementById('dc-type').value;
+            const prodName = document.getElementById('dc-prod-list').value;
+            const qty = document.getElementById('dc-qty').value;
+
+            if(!dc || !prodName || !qty) return;
+
+            const prod = masterProducts.find(p => p.name === prodName);
+            dcEntries.unshift({
+                id: Date.now(),
+                dcNumber: dc,
+                customer: client,
+                date: new Date().toISOString().split('T')[0],
+                type: type,
+                productName: prodName,
+                size: prod.size,
+                quantity: Number(qty)
+            });
+            renderAll();
+            // Reset
+            ['dc-ref', 'dc-client', 'dc-qty'].forEach(id => document.getElementById(id).value = '');
+        }
+
+        function handleMasterAdd() {
+            const name = document.getElementById('m-name').value;
+            const size = document.getElementById('m-size').value;
+            if(!name || !size) return;
+            masterProducts.push({ id: Date.now(), name, size });
+            renderAll();
+            document.getElementById('m-name').value = '';
+            document.getElementById('m-size').value = '';
+        }
+
+        function deleteMaster(id) {
+            masterProducts = masterProducts.filter(p => p.id !== id);
+            renderAll();
+        }
+    </script>
+</body>
+</html>
