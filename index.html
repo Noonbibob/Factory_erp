@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Friendly ERP System</title>
+    <title>ERP System | Secure Access</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -11,15 +11,9 @@
         body { font-family: 'Inter', sans-serif; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        
         .nav-active { background-color: #2563eb !important; color: white !important; }
         .mobile-nav-active { color: #2563eb !important; border-top: 2px solid #2563eb; }
-        
-        .sub-nav-active { 
-            background-color: #0f172a !important; 
-            color: #ffffff !important; 
-        }
-
+        .sub-nav-active { background-color: #0f172a !important; color: #ffffff !important; }
         [data-lucide] { width: 18px; height: 18px; }
         
         #image-modal {
@@ -32,195 +26,321 @@
             justify-content: center;
             align-items: center;
         }
+
+        /* Login Overlay */
+        #auth-screen {
+            position: fixed;
+            inset: 0;
+            background: #f8fafc;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen pb-20 md:pb-0">
 
-    <div id="image-modal" onclick="closeModal()">
-        <div class="relative max-w-4xl w-full h-full flex flex-col items-center justify-center gap-4">
-            <button class="absolute top-4 right-4 text-white bg-white/20 p-2 rounded-full"><i data-lucide="x"></i></button>
-            <img id="modal-img" src="" class="max-h-[80vh] w-auto rounded-lg shadow-2xl object-contain">
-            <p id="modal-label" class="text-white font-black uppercase tracking-widest text-sm"></p>
+    <!-- LOGIN SCREEN -->
+    <div id="auth-screen">
+        <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-[2.5rem] shadow-2xl border border-slate-100">
+            <div class="text-center">
+                <div class="inline-flex bg-blue-600 p-4 rounded-3xl text-white mb-6 shadow-xl shadow-blue-200">
+                    <i data-lucide="shield-check" size="32"></i>
+                </div>
+                <h2 class="text-3xl font-black text-slate-900 tracking-tight uppercase">ERP Access</h2>
+                <p class="mt-2 text-sm font-bold text-slate-400 uppercase tracking-widest">Authorized Personnel Only</p>
+            </div>
+            <form class="mt-8 space-y-4" onsubmit="handleLogin(event)">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Email Address</label>
+                    <input id="login-email" type="email" required class="w-full h-14 bg-slate-50 border border-slate-200 rounded-2xl px-6 text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all" placeholder="name@company.com">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Password</label>
+                    <input id="login-password" type="password" required class="w-full h-14 bg-slate-50 border border-slate-200 rounded-2xl px-6 text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all" placeholder="••••••••">
+                </div>
+                <div id="login-error" class="hidden text-rose-600 text-[10px] font-black uppercase text-center bg-rose-50 py-2 rounded-lg border border-rose-100">
+                    Invalid Credentials
+                </div>
+                <button type="submit" id="login-btn" class="w-full h-14 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl hover:bg-blue-600 transition-all flex items-center justify-center gap-2">
+                    Sign In to Portal
+                </button>
+            </form>
         </div>
     </div>
 
-    <div class="flex flex-col md:flex-row min-h-screen">
-        <!-- Desktop Sidebar -->
-        <aside class="w-64 bg-slate-900 text-white hidden md:flex flex-col shadow-xl">
-            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
-                <div class="bg-blue-600 p-2 rounded-lg"><i data-lucide="package" size="24"></i></div>
-                <h1 class="text-xl font-bold tracking-tight">ERP System</h1>
+    <!-- MAIN APP WRAPPER (HIDDEN BY DEFAULT) -->
+    <div id="app-container" class="hidden">
+        <div id="image-modal" onclick="closeModal()">
+            <div class="relative max-w-4xl w-full h-full flex flex-col items-center justify-center gap-4">
+                <button class="absolute top-4 right-4 text-white bg-white/20 p-2 rounded-full"><i data-lucide="x"></i></button>
+                <img id="modal-img" src="" class="max-h-[80vh] w-auto rounded-lg shadow-2xl object-contain">
+                <p id="modal-label" class="text-white font-black uppercase tracking-widest text-sm"></p>
             </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <button onclick="switchTab('products')" id="btn-products" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 transition-all">
-                    <i data-lucide="layout-dashboard"></i><span class="font-medium">Inventory</span>
+        </div>
+
+        <div class="flex flex-col md:flex-row min-h-screen">
+            <!-- Desktop Sidebar -->
+            <aside class="w-64 bg-slate-900 text-white hidden md:flex flex-col shadow-xl">
+                <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+                    <div class="bg-blue-600 p-2 rounded-lg"><i data-lucide="package" size="24"></i></div>
+                    <h1 class="text-xl font-bold tracking-tight">ERP System</h1>
+                </div>
+                <nav class="flex-1 p-4 space-y-2">
+                    <button onclick="switchTab('products')" id="btn-products" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 transition-all">
+                        <i data-lucide="layout-dashboard"></i><span class="font-medium">Inventory</span>
+                    </button>
+                    <button onclick="switchTab('dc_entry')" id="btn-dc_entry" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 transition-all">
+                        <i data-lucide="file-text"></i><span class="font-medium">DC Entry</span>
+                    </button>
+                    <button onclick="switchTab('master')" id="btn-master" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 transition-all">
+                        <i data-lucide="settings"></i><span class="font-medium">Master</span>
+                    </button>
+                </nav>
+                <div class="p-4 border-t border-slate-800">
+                    <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:text-rose-400 transition-all">
+                        <i data-lucide="log-out"></i><span class="font-medium">Logout</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Mobile Bottom Nav -->
+            <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around items-center md:hidden z-50">
+                <button onclick="switchTab('products')" id="m-btn-products" class="mobile-nav-btn flex flex-col items-center py-3 px-6 text-slate-400">
+                    <i data-lucide="layout-dashboard"></i><span class="text-[10px] font-bold uppercase mt-1">Inventory</span>
                 </button>
-                <button onclick="switchTab('dc_entry')" id="btn-dc_entry" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 transition-all">
-                    <i data-lucide="file-text"></i><span class="font-medium">DC Entry</span>
+                <button onclick="switchTab('dc_entry')" id="m-btn-dc_entry" class="mobile-nav-btn flex flex-col items-center py-3 px-6 text-slate-400">
+                    <i data-lucide="file-text"></i><span class="text-[10px] font-bold uppercase mt-1">DC Entry</span>
                 </button>
-                <button onclick="switchTab('master')" id="btn-master" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 transition-all">
-                    <i data-lucide="settings"></i><span class="font-medium">Master</span>
+                <button onclick="switchTab('master')" id="m-btn-master" class="mobile-nav-btn flex flex-col items-center py-3 px-6 text-slate-400">
+                    <i data-lucide="settings"></i><span class="text-[10px] font-bold uppercase mt-1">Master</span>
                 </button>
             </nav>
-        </aside>
 
-        <!-- Mobile Bottom Nav -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around items-center md:hidden z-50">
-            <button onclick="switchTab('products')" id="m-btn-products" class="mobile-nav-btn flex flex-col items-center py-3 px-6 text-slate-400">
-                <i data-lucide="layout-dashboard"></i><span class="text-[10px] font-bold uppercase mt-1">Inventory</span>
-            </button>
-            <button onclick="switchTab('dc_entry')" id="m-btn-dc_entry" class="mobile-nav-btn flex flex-col items-center py-3 px-6 text-slate-400">
-                <i data-lucide="file-text"></i><span class="text-[10px] font-bold uppercase mt-1">DC Entry</span>
-            </button>
-            <button onclick="switchTab('master')" id="m-btn-master" class="mobile-nav-btn flex flex-col items-center py-3 px-6 text-slate-400">
-                <i data-lucide="settings"></i><span class="text-[10px] font-bold uppercase mt-1">Master</span>
-            </button>
-        </nav>
+            <main class="flex-1 flex flex-col overflow-auto">
+                <header class="bg-white border-b border-slate-200 px-4 md:px-8 py-4 sticky top-0 z-40 shadow-sm flex justify-between items-center">
+                    <h2 id="current-tab-label" class="text-xl font-black text-slate-800 uppercase tracking-tight">Inventory</h2>
+                    <div id="header-date" class="hidden sm:block text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full"></div>
+                </header>
 
-        <main class="flex-1 flex flex-col overflow-auto">
-            <header class="bg-white border-b border-slate-200 px-4 md:px-8 py-4 sticky top-0 z-40 shadow-sm flex justify-between items-center">
-                <h2 id="current-tab-label" class="text-xl font-black text-slate-800 uppercase tracking-tight">Inventory</h2>
-                <div id="header-date" class="hidden sm:block text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full"></div>
-            </header>
-
-            <div class="p-4 md:p-8 max-w-7xl mx-auto w-full space-y-6">
-                
-                <!-- Tab: Inventory -->
-                <div id="tab-products" class="tab-content active space-y-6">
-                    <div class="flex p-1 bg-slate-200 rounded-xl w-fit">
-                        <button onclick="switchSubTab('raw')" id="sub-btn-raw" class="sub-nav-btn px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Raw Inventory</button>
-                        <button onclick="switchSubTab('misc')" id="sub-btn-misc" class="sub-nav-btn px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Miscellaneous</button>
-                    </div>
-
-                    <!-- Add Misc Item Box (Quick Entry) -->
-                    <div id="add-misc-panel" class="hidden bg-slate-900 p-6 rounded-3xl shadow-xl space-y-4">
-                        <h3 class="text-white font-black uppercase text-xs tracking-widest">Add Miscellaneous Item</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <input id="misc-name" type="text" placeholder="Item Name" class="h-11 rounded-xl px-4 text-sm outline-none bg-white">
-                            <input id="misc-qty" type="number" placeholder="Initial Qty" class="h-11 rounded-xl px-4 text-sm outline-none bg-white">
-                            <button onclick="addMiscItem()" class="h-11 bg-blue-600 text-white rounded-xl font-black uppercase text-xs shadow-lg transition-transform active:scale-95">Add to Stock</button>
+                <div class="p-4 md:p-8 max-w-7xl mx-auto w-full space-y-6">
+                    
+                    <!-- Tab: Inventory -->
+                    <div id="tab-products" class="tab-content active space-y-6">
+                        <div class="flex p-1 bg-slate-200 rounded-xl w-fit">
+                            <button onclick="switchSubTab('raw')" id="sub-btn-raw" class="sub-nav-btn px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Raw Inventory</button>
+                            <button onclick="switchSubTab('misc')" id="sub-btn-misc" class="sub-nav-btn px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Miscellaneous</button>
                         </div>
-                    </div>
 
-                    <!-- Quick Reduce Panel -->
-                    <div id="quick-reduce-panel" class="hidden bg-rose-600 p-6 rounded-3xl shadow-xl space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                        <div class="flex justify-between items-center border-b border-rose-500 pb-3">
-                            <div>
-                                <h3 id="reduce-title" class="text-white font-black uppercase text-sm">Reduce Stock</h3>
-                                <p id="reduce-subtitle" class="text-rose-200 text-[10px] font-bold uppercase"></p>
+                        <!-- Add Misc Item Box -->
+                        <div id="add-misc-panel" class="hidden bg-slate-900 p-6 rounded-3xl shadow-xl space-y-4">
+                            <h3 class="text-white font-black uppercase text-xs tracking-widest">Add Miscellaneous Item</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <input id="misc-name" type="text" placeholder="Item Name" class="h-11 rounded-xl px-4 text-sm outline-none bg-white">
+                                <input id="misc-qty" type="number" placeholder="Initial Qty" class="h-11 rounded-xl px-4 text-sm outline-none bg-white">
+                                <button onclick="addMiscItem()" class="h-11 bg-blue-600 text-white rounded-xl font-black uppercase text-xs shadow-lg transition-transform active:scale-95">Add to Stock</button>
                             </div>
-                            <button onclick="closeReducePanel()" class="text-white"><i data-lucide="x"></i></button>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <input id="red-qty" type="number" placeholder="Qty to Remove" class="h-11 rounded-xl px-4 text-sm outline-none bg-white">
-                            <input id="red-ref" type="text" placeholder="Reference / Purpose" class="h-11 rounded-xl px-4 text-sm outline-none bg-white">
-                            <button onclick="confirmReduction()" class="h-11 bg-slate-900 text-white rounded-xl font-black uppercase text-xs shadow-lg transition-transform active:scale-95">Confirm Update</button>
+
+                        <!-- Quick Reduce Panel -->
+                        <div id="quick-reduce-panel" class="hidden bg-rose-600 p-6 rounded-3xl shadow-xl space-y-4">
+                            <div class="flex justify-between items-center border-b border-rose-500 pb-3">
+                                <div>
+                                    <h3 id="reduce-title" class="text-white font-black uppercase text-sm">Reduce Stock</h3>
+                                    <p id="reduce-subtitle" class="text-rose-200 text-[10px] font-bold uppercase"></p>
+                                </div>
+                                <button onclick="closeReducePanel()" class="text-white"><i data-lucide="x"></i></button>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <input id="red-qty" type="number" placeholder="Qty to Remove" class="h-11 rounded-xl px-4 text-sm outline-none bg-white">
+                                <input id="red-ref" type="text" placeholder="Reference / Purpose" class="h-11 rounded-xl px-4 text-sm outline-none bg-white">
+                                <button onclick="confirmReduction()" class="h-11 bg-slate-900 text-white rounded-xl font-black uppercase text-xs shadow-lg transition-transform active:scale-95">Confirm Update</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead class="bg-slate-50 border-b border-slate-100">
+                                        <tr>
+                                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Product Info</th>
+                                            <th id="th-dc" class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Ref DC</th>
+                                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Balance</th>
+                                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="inventory-table-body" class="divide-y divide-slate-50"></tbody>
+                                </table>
+                                <div id="empty-inventory" class="hidden p-16 text-center text-slate-300 font-bold uppercase text-xs tracking-[0.2em]">Zero Stock Available</div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <thead class="bg-slate-50 border-b border-slate-100">
-                                    <tr>
-                                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Product Info</th>
-                                        <th id="th-dc" class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Ref DC</th>
-                                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Balance</th>
-                                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="inventory-table-body" class="divide-y divide-slate-50"></tbody>
-                            </table>
-                            <div id="empty-inventory" class="hidden p-16 text-center text-slate-300 font-bold uppercase text-xs tracking-[0.2em]">Zero Stock Available</div>
+                    <!-- Tab: DC Entry -->
+                    <div id="tab-dc_entry" class="tab-content space-y-6">
+                        <div class="flex flex-wrap gap-2 p-1 bg-slate-200 rounded-xl w-fit">
+                            <button onclick="switchDcSubTab('inward')" id="dc-sub-btn-inward" class="dc-sub-nav-btn px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Inward Entry</button>
+                            <button onclick="switchDcSubTab('outward')" id="dc-sub-btn-outward" class="dc-sub-nav-btn px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Outward Entry</button>
                         </div>
+
+                        <div class="space-y-4">
+                            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase">DC Date</label>
+                                    <input id="dc-date" type="date" class="w-full h-11 border border-slate-200 bg-slate-50 rounded-xl px-4 text-sm outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase">DC Number</label>
+                                    <input id="dc-ref" type="text" placeholder="REF#" class="w-full h-11 border border-slate-200 bg-slate-50 rounded-xl px-4 text-sm outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase">Party Name</label>
+                                    <input id="dc-client" type="text" placeholder="Client Name" class="w-full h-11 border border-slate-200 bg-slate-50 rounded-xl px-4 text-sm outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase">DC Document</label>
+                                    <input type="file" id="dc-image-input" class="hidden" onchange="handleImagePreview(event)">
+                                    <button onclick="document.getElementById('dc-image-input').click()" id="img-upload-btn" class="w-full h-11 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase text-slate-600">
+                                        <i data-lucide="camera" size="16"></i> <span id="img-status">Add Photo</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="item-entry-section" class="bg-slate-900 p-6 rounded-3xl shadow-xl space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-12 gap-3" id="dc-entry-controls"></div>
+                                <div id="dc-items-preview" class="space-y-2 pt-2 border-t border-slate-800"></div>
+                                <button id="final-save-btn" onclick="saveFullDC()" class="hidden w-full h-14 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl transition-all">Save DC Record</button>
+                                <button id="simple-outward-save" onclick="saveFullDC()" class="hidden w-full h-14 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl transition-all">Submit Outward DC</button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="bg-slate-100 p-4 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="relative">
+                                    <i data-lucide="search" class="absolute left-3 top-3.5 text-slate-400" size="18"></i>
+                                    <input id="search-dc-no" type="text" onkeyup="renderTransactionFeed()" placeholder="Search DC Number..." class="w-full h-11 pl-10 pr-4 bg-white rounded-xl text-sm border-none outline-none shadow-sm">
+                                </div>
+                                <div class="relative">
+                                    <i data-lucide="calendar-search" class="absolute left-3 top-3.5 text-slate-400" size="18"></i>
+                                    <input id="search-dc-date" type="date" onchange="renderTransactionFeed()" class="w-full h-11 pl-10 pr-4 bg-white rounded-xl text-sm border-none outline-none shadow-sm">
+                                </div>
+                            </div>
+                            <div id="transaction-feed" class="space-y-3"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Master -->
+                    <div id="tab-master" class="tab-content space-y-6">
+                        <div class="bg-slate-900 p-8 rounded-3xl text-white shadow-2xl border border-slate-800">
+                            <h3 class="text-xl font-black mb-6 uppercase">Master Product List</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <input id="m-name" type="text" placeholder="Product Name" class="bg-white/10 border border-white/20 rounded-xl px-5 py-4 text-white outline-none">
+                                <input id="m-size" type="text" placeholder="Size/Spec" class="bg-white/10 border border-white/20 rounded-xl px-5 py-4 text-white outline-none">
+                                <select id="m-category" class="bg-white/10 border border-white/20 rounded-xl px-5 py-4 text-white outline-none">
+                                    <option value="Raw" class="text-slate-900">Raw Inventory</option>
+                                    <option value="Misc" class="text-slate-900">Miscellaneous</option>
+                                </select>
+                                <button onclick="handleMasterAdd()" class="sm:col-span-3 bg-blue-600 p-5 rounded-xl font-black uppercase tracking-widest text-xs">Add Product to Master</button>
+                            </div>
+                        </div>
+                        <div id="master-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                     </div>
                 </div>
-
-                <!-- Tab: DC Entry -->
-                <div id="tab-dc_entry" class="tab-content space-y-6">
-                    <div class="flex flex-wrap gap-2 p-1 bg-slate-200 rounded-xl w-fit">
-                        <button onclick="switchDcSubTab('inward')" id="dc-sub-btn-inward" class="dc-sub-nav-btn px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Inward Entry</button>
-                        <button onclick="switchDcSubTab('outward')" id="dc-sub-btn-outward" class="dc-sub-nav-btn px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Outward Entry</button>
-                    </div>
-
-                    <!-- DC General Info -->
-                    <div class="space-y-4">
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-slate-400 uppercase">DC Date</label>
-                                <input id="dc-date" type="date" class="w-full h-11 border border-slate-200 bg-slate-50 rounded-xl px-4 text-sm outline-none">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-slate-400 uppercase">DC Number</label>
-                                <input id="dc-ref" type="text" placeholder="REF#" class="w-full h-11 border border-slate-200 bg-slate-50 rounded-xl px-4 text-sm outline-none">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-slate-400 uppercase">Party Name</label>
-                                <input id="dc-client" type="text" placeholder="Client Name" class="w-full h-11 border border-slate-200 bg-slate-50 rounded-xl px-4 text-sm outline-none">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-slate-400 uppercase">DC Document</label>
-                                <input type="file" id="dc-image-input" class="hidden" onchange="handleImagePreview(event)">
-                                <button onclick="document.getElementById('dc-image-input').click()" id="img-upload-btn" class="w-full h-11 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase text-slate-600">
-                                    <i data-lucide="camera" size="16"></i> <span id="img-status">Add Photo</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Item Entry Area -->
-                        <div id="item-entry-section" class="bg-slate-900 p-6 rounded-3xl shadow-xl space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-12 gap-3" id="dc-entry-controls"></div>
-                            <div id="dc-items-preview" class="space-y-2 pt-2 border-t border-slate-800"></div>
-                            <button id="final-save-btn" onclick="saveFullDC()" class="hidden w-full h-14 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl transition-all">
-                                Save DC Record
-                            </button>
-                            <!-- Special save button for simple outward where no items are added to list -->
-                            <button id="simple-outward-save" onclick="saveFullDC()" class="hidden w-full h-14 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl transition-all">
-                                Submit Outward DC
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Search and History Section -->
-                    <div class="space-y-4">
-                        <div class="bg-slate-100 p-4 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="relative">
-                                <i data-lucide="search" class="absolute left-3 top-3.5 text-slate-400" size="18"></i>
-                                <input id="search-dc-no" type="text" onkeyup="renderTransactionFeed()" placeholder="Search DC Number..." class="w-full h-11 pl-10 pr-4 bg-white rounded-xl text-sm border-none outline-none shadow-sm">
-                            </div>
-                            <div class="relative">
-                                <i data-lucide="calendar-search" class="absolute left-3 top-3.5 text-slate-400" size="18"></i>
-                                <input id="search-dc-date" type="date" onchange="renderTransactionFeed()" class="w-full h-11 pl-10 pr-4 bg-white rounded-xl text-sm border-none outline-none shadow-sm">
-                            </div>
-                        </div>
-                        <div id="transaction-feed" class="space-y-3"></div>
-                    </div>
-                </div>
-
-                <!-- Tab: Master -->
-                <div id="tab-master" class="tab-content space-y-6">
-                    <div class="bg-slate-900 p-8 rounded-3xl text-white shadow-2xl border border-slate-800">
-                        <h3 class="text-xl font-black mb-6 uppercase">Master Product List</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <input id="m-name" type="text" placeholder="Product Name" class="bg-white/10 border border-white/20 rounded-xl px-5 py-4 text-white outline-none">
-                            <input id="m-size" type="text" placeholder="Size/Spec" class="bg-white/10 border border-white/20 rounded-xl px-5 py-4 text-white outline-none">
-                            <select id="m-category" class="bg-white/10 border border-white/20 rounded-xl px-5 py-4 text-white outline-none">
-                                <option value="Raw" class="text-slate-900">Raw Inventory</option>
-                                <option value="Misc" class="text-slate-900">Miscellaneous</option>
-                            </select>
-                            <button onclick="handleMasterAdd()" class="sm:col-span-3 bg-blue-600 p-5 rounded-xl font-black uppercase tracking-widest text-xs">Add Product to Master</button>
-                        </div>
-                    </div>
-                    <div id="master-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-                </div>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
 
+    <!-- FIREBASE AND AUTH LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // IMPORTANT: Verify these settings in your Firebase Console Settings
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGNyeShR7oeXKoacQ0GV6rGLQ3i0cR8Fg",
+            authDomain: "erpsystem-aeed4.firebaseapp.com",
+            projectId: "erpsystem-aeed4",
+            storageBucket: "erpsystem-aeed4.firebasestorage.app",
+            messagingSenderId: "936176090407",
+            appId: "1:936176090407:web:52ac3396ba22a7dd43fd02"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Exponential backoff retry wrapper for login
+        async function attemptLogin(email, password, retries = 5, delay = 1000) {
+            try {
+                return await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                if (retries > 0 && (error.code === 'auth/network-request-failed' || error.code === 'auth/internal-error')) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return attemptLogin(email, password, retries - 1, delay * 2);
+                }
+                throw error;
+            }
+        }
+
+        window.handleLogin = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            const errBox = document.getElementById('login-error');
+            const btn = document.getElementById('login-btn');
+
+            errBox.classList.add('hidden');
+            btn.innerText = "Authenticating...";
+            btn.disabled = true;
+
+            try {
+                await attemptLogin(email, pass);
+            } catch (error) {
+                console.error("Login Error:", error.code, error.message);
+                errBox.classList.remove('hidden');
+                
+                // User-friendly error messages based on Firebase error codes
+                if (error.code === 'auth/invalid-credential') {
+                    errBox.innerText = "Invalid email or password.";
+                } else if (error.code === 'auth/user-not-found') {
+                    errBox.innerText = "No account found with this email.";
+                } else if (error.code === 'auth/wrong-password') {
+                    errBox.innerText = "Incorrect password.";
+                } else if (error.code === 'auth/too-many-requests') {
+                    errBox.innerText = "Too many attempts. Try again later.";
+                } else {
+                    errBox.innerText = "Authentication failed. Please check your credentials.";
+                }
+                
+                btn.innerText = "Sign In to Portal";
+                btn.disabled = false;
+            }
+        };
+
+        window.handleLogout = () => {
+            signOut(auth).then(() => {
+                location.reload();
+            });
+        };
+
+        // Auth Observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app-container').classList.remove('hidden');
+                renderAll();
+            } else {
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('app-container').classList.add('hidden');
+            }
+        });
+    </script>
+
+    <!-- ERP SYSTEM LOGIC -->
     <script>
         let masterProducts = [
-            { id: 1, name: 'Cement Ultra', size: '50kg', category: 'Raw' },
-            { id: 2, name: 'Steel Rods', size: '10mm', category: 'Raw' }
+            { id: 1, name: 'Cement Ultra', size: '50kg', category: 'Raw' }
         ];
 
         let dcEntries = [];
@@ -232,22 +352,19 @@
         let currentImageBase64 = null;
 
         window.addEventListener('load', () => {
-            document.getElementById('dc-date').value = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('dc-date');
+            if(dateInput) dateInput.value = new Date().toISOString().split('T')[0];
             document.getElementById('header-date').innerText = new Date().toLocaleDateString('en-GB', { dateStyle: 'medium' });
-            renderAll();
-            switchTab('products');
-            switchSubTab('raw');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         });
 
         function switchTab(tabId) {
             currentTab = tabId;
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
-            
             document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(b => b.classList.remove('nav-active', 'mobile-nav-active'));
             document.getElementById(`btn-${tabId}`)?.classList.add('nav-active');
             document.getElementById(`m-btn-${tabId}`)?.classList.add('mobile-nav-active');
-            
             document.getElementById('current-tab-label').innerText = tabId.replace('_', ' ');
             closeReducePanel();
             renderAll();
@@ -257,10 +374,8 @@
             currentSubTab = sub;
             document.querySelectorAll('.sub-nav-btn').forEach(b => b.classList.remove('sub-nav-active'));
             document.getElementById(`sub-btn-${sub}`).classList.add('sub-nav-active');
-            
             const addMiscPanel = document.getElementById('add-misc-panel');
             const thDc = document.getElementById('th-dc');
-            
             if (sub === 'misc') {
                 addMiscPanel.classList.remove('hidden');
                 thDc.innerText = 'Item Group';
@@ -268,7 +383,6 @@
                 addMiscPanel.classList.add('hidden');
                 thDc.innerText = 'Ref DC';
             }
-
             closeReducePanel();
             renderInventory();
         }
@@ -277,7 +391,7 @@
             currentDcSubTab = sub;
             document.querySelectorAll('.dc-sub-nav-btn').forEach(b => b.classList.remove('sub-nav-active'));
             document.getElementById(`dc-sub-btn-${sub}`).classList.add('sub-nav-active');
-            batchItems = []; // Clear current list on switch
+            batchItems = [];
             renderDcEntryControls();
             renderBatchPreview();
         }
@@ -286,20 +400,7 @@
             const name = document.getElementById('misc-name').value;
             const qty = Number(document.getElementById('misc-qty').value);
             if (!name || !qty) return;
-
-            dcEntries.unshift({
-                id: Date.now(),
-                dcNumber: 'MISC-GROUP',
-                actualDc: 'MISC',
-                customer: 'Direct Entry',
-                date: new Date().toISOString().split('T')[0],
-                type: 'IN',
-                productName: name,
-                size: 'Misc',
-                quantity: qty,
-                category: 'Misc'
-            });
-
+            dcEntries.unshift({ id: Date.now(), dcNumber: 'MISC-GROUP', actualDc: 'MISC', customer: 'Direct Entry', date: new Date().toISOString().split('T')[0], type: 'IN', productName: name, size: 'Misc', quantity: qty, category: 'Misc' });
             document.getElementById('misc-name').value = '';
             document.getElementById('misc-qty').value = '';
             renderAll();
@@ -309,16 +410,7 @@
             const stockMap = {};
             dcEntries.forEach(entry => {
                 const key = `${entry.productName}|${entry.size}|${entry.dcNumber}`;
-                if (!stockMap[key]) {
-                    stockMap[key] = { 
-                        key, 
-                        name: entry.productName, 
-                        size: entry.size, 
-                        dcNo: entry.dcNumber, 
-                        category: entry.category,
-                        stock: 0 
-                    };
-                }
+                if (!stockMap[key]) stockMap[key] = { key, name: entry.productName, size: entry.size, dcNo: entry.dcNumber, category: entry.category, stock: 0 };
                 stockMap[key].stock += (entry.type === 'IN' ? entry.quantity : -entry.quantity);
             });
             return Object.values(stockMap).filter(s => s.stock > 0);
@@ -328,7 +420,6 @@
             const items = getInventoryBalances();
             activeReduceItem = items.find(i => i.key === key);
             if (!activeReduceItem) return;
-
             document.getElementById('reduce-subtitle').innerText = `${activeReduceItem.name} • Available: ${activeReduceItem.stock}`;
             document.getElementById('quick-reduce-panel').classList.remove('hidden');
             document.getElementById('red-qty').focus();
@@ -337,45 +428,21 @@
         function closeReducePanel() {
             document.getElementById('quick-reduce-panel').classList.add('hidden');
             activeReduceItem = null;
-            document.getElementById('red-qty').value = '';
-            document.getElementById('red-ref').value = '';
         }
 
         function confirmReduction() {
             const qty = Number(document.getElementById('red-qty').value);
             const ref = document.getElementById('red-ref').value || 'Usage';
             if (!qty || !activeReduceItem) return;
-            if (qty > activeReduceItem.stock) {
-                alert("Cannot reduce more than available balance!");
-                return;
-            }
-
-            dcEntries.unshift({
-                id: Date.now(),
-                dcNumber: activeReduceItem.dcNo,
-                actualDc: ref,
-                customer: 'Internal Consumption',
-                date: new Date().toISOString().split('T')[0],
-                type: 'OUT',
-                productName: activeReduceItem.name,
-                size: activeReduceItem.size,
-                quantity: qty,
-                category: activeReduceItem.category
-            });
-
+            dcEntries.unshift({ id: Date.now(), dcNumber: activeReduceItem.dcNo, actualDc: ref, customer: 'Internal Consumption', date: new Date().toISOString().split('T')[0], type: 'OUT', productName: activeReduceItem.name, size: activeReduceItem.size, quantity: qty, category: activeReduceItem.category });
             closeReducePanel();
             renderAll();
         }
 
         function renderInventory() {
-            const stocks = getInventoryBalances().filter(s => 
-                (currentSubTab === 'raw' && s.category === 'Raw') || 
-                (currentSubTab === 'misc' && s.category === 'Misc')
-            );
-            
+            const stocks = getInventoryBalances().filter(s => (currentSubTab === 'raw' && s.category === 'Raw') || (currentSubTab === 'misc' && s.category === 'Misc'));
             const body = document.getElementById('inventory-table-body');
             const empty = document.getElementById('empty-inventory');
-            
             if (stocks.length === 0) {
                 body.innerHTML = '';
                 empty.classList.remove('hidden');
@@ -390,11 +457,9 @@
                         <td class="px-6 py-4 text-center">
                             <span class="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-black text-slate-500 uppercase">${row.dcNo}</span>
                         </td>
+                        <td class="px-6 py-4 text-right"><p class="font-black text-blue-600 text-base">${row.stock}</p></td>
                         <td class="px-6 py-4 text-right">
-                            <p class="font-black text-blue-600 text-base">${row.stock}</p>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <button onclick="openReducePanel('${row.key}')" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all shadow-sm active:scale-95">Reduce</button>
+                            <button onclick="openReducePanel('${row.key}')" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all shadow-sm">Reduce</button>
                         </td>
                     </tr>
                 `).join('');
@@ -403,134 +468,58 @@
 
         function renderDcEntryControls() {
             const container = document.getElementById('dc-entry-controls');
-            
             if (currentDcSubTab === 'inward') {
                 document.getElementById('simple-outward-save').classList.add('hidden');
-                container.innerHTML = `
-                    <div class="md:col-span-6">
-                        <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Product Name (Manual)</label>
-                        <input id="dc-manual-name" type="text" placeholder="Enter Product Name" class="w-full h-11 rounded-xl px-4 text-sm outline-none bg-white">
-                    </div>
-                    <div class="md:col-span-3">
-                        <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Size/Spec</label>
-                        <input id="dc-manual-size" type="text" placeholder="e.g. 10mm" class="w-full h-11 rounded-xl px-4 text-sm outline-none bg-white">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Qty</label>
-                        <input id="dc-qty-input" type="number" placeholder="Qty" class="w-full h-11 rounded-xl px-4 text-sm outline-none bg-white">
-                    </div>
-                    <div class="md:col-span-1 flex items-end">
-                        <button onclick="addItemToCurrentDc()" class="w-full h-11 bg-white text-slate-900 rounded-xl flex items-center justify-center transition-transform active:scale-95 shadow-lg">
-                            <i data-lucide="plus" size="20"></i>
-                        </button>
-                    </div>
-                `;
+                container.innerHTML = `<div class="md:col-span-6"><label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Product Name (Manual)</label><input id="dc-manual-name" type="text" placeholder="Enter Product Name" class="w-full h-11 rounded-xl px-4 text-sm outline-none bg-white"></div><div class="md:col-span-3"><label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Size/Spec</label><input id="dc-manual-size" type="text" placeholder="e.g. 10mm" class="w-full h-11 rounded-xl px-4 text-sm outline-none bg-white"></div><div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Qty</label><input id="dc-qty-input" type="number" placeholder="Qty" class="w-full h-11 rounded-xl px-4 text-sm outline-none bg-white"></div><div class="md:col-span-1 flex items-end"><button onclick="addItemToCurrentDc()" class="w-full h-11 bg-white text-slate-900 rounded-xl flex items-center justify-center transition-transform active:scale-95 shadow-lg"><i data-lucide="plus" size="20"></i></button></div>`;
             } else {
-                // Outward Entry (Simplified - No Stock Selection)
-                container.innerHTML = `
-                    <div class="md:col-span-12 py-4">
-                        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest text-center">Fill DC Info above to save Outward record</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="md:col-span-12 py-4"><p class="text-slate-400 text-xs font-bold uppercase tracking-widest text-center">Fill DC Info above to save Outward record</p></div>`;
                 document.getElementById('simple-outward-save').classList.remove('hidden');
             }
-            lucide.createIcons();
+            if(window.lucide) lucide.createIcons();
         }
 
         function addItemToCurrentDc() {
             const name = document.getElementById('dc-manual-name').value;
             const size = document.getElementById('dc-manual-size').value || 'N/A';
             const qty = Number(document.getElementById('dc-qty-input').value);
-
             if (!name || !qty) return;
-
             batchItems.push({ name, size, qty, category: 'Raw', sourceDc: null });
             renderBatchPreview();
-            
-            // Clear inputs for next item
             document.getElementById('dc-manual-name').value = '';
             document.getElementById('dc-manual-size').value = '';
             document.getElementById('dc-qty-input').value = '';
-            document.getElementById('dc-manual-name').focus();
         }
 
         function renderBatchPreview() {
             const container = document.getElementById('dc-items-preview');
             const saveBtn = document.getElementById('final-save-btn');
-            
-            if (batchItems.length === 0) {
-                container.innerHTML = '';
-                saveBtn.classList.add('hidden');
-                return;
-            }
-            
+            if (batchItems.length === 0) { container.innerHTML = ''; saveBtn.classList.add('hidden'); return; }
             saveBtn.classList.remove('hidden');
             container.innerHTML = batchItems.map((item, idx) => `
                 <div class="flex items-center justify-between bg-slate-800 p-4 rounded-2xl text-white">
-                    <div>
-                        <p class="font-black text-sm uppercase">${item.name}</p>
-                        <p class="text-[9px] text-slate-400 font-bold uppercase">${item.size}</p>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <p class="font-black text-lg text-blue-400">${item.qty}</p>
-                        <button onclick="batchItems.splice(${idx},1);renderBatchPreview()" class="text-rose-500"><i data-lucide="trash-2" size="16"></i></button>
-                    </div>
+                    <div><p class="font-black text-sm uppercase">${item.name}</p><p class="text-[9px] text-slate-400 font-bold uppercase">${item.size}</p></div>
+                    <div class="flex items-center gap-4"><p class="font-black text-lg text-blue-400">${item.qty}</p><button onclick="batchItems.splice(${idx},1);renderBatchPreview()" class="text-rose-500"><i data-lucide="trash-2" size="16"></i></button></div>
                 </div>
             `).join('');
-            lucide.createIcons();
+            if(window.lucide) lucide.createIcons();
         }
 
         function saveFullDC() {
             const ref = document.getElementById('dc-ref').value;
             const client = document.getElementById('dc-client').value;
             const date = document.getElementById('dc-date').value;
-            
-            if (!ref || !client) { 
-                alert("Please enter DC Number and Party Name"); 
-                return; 
-            }
-
+            if (!ref || !client) return alert("Missing Info");
             if (currentDcSubTab === 'inward') {
-                if (batchItems.length === 0) { alert("Add at least one item"); return; }
-                
                 batchItems.forEach(item => {
-                    dcEntries.unshift({
-                        id: Date.now() + Math.random(),
-                        dcNumber: ref,
-                        actualDc: ref,
-                        customer: client,
-                        date: date,
-                        type: 'IN',
-                        productName: item.name,
-                        size: item.size,
-                        quantity: item.qty,
-                        category: item.category,
-                        image: currentImageBase64
-                    });
+                    dcEntries.unshift({ id: Date.now() + Math.random(), dcNumber: ref, actualDc: ref, customer: client, date, type: 'IN', productName: item.name, size: item.size, quantity: item.qty, category: item.category, image: currentImageBase64 });
                 });
             } else {
-                // Simplified Outward Record (Documenting the action)
-                dcEntries.unshift({
-                    id: Date.now(),
-                    dcNumber: ref,
-                    actualDc: ref,
-                    customer: client,
-                    date: date,
-                    type: 'OUT',
-                    productName: 'Outward Shipment',
-                    size: 'Bulk',
-                    quantity: 0, // Recorded as 0 for simple tracking
-                    category: 'Outward',
-                    image: currentImageBase64
-                });
+                dcEntries.unshift({ id: Date.now(), dcNumber: ref, actualDc: ref, customer: client, date, type: 'OUT', productName: 'Outward shipment', size: 'Bulk', quantity: 0, category: 'Outward', image: currentImageBase64 });
             }
-
-            // Cleanup
             batchItems = [];
             currentImageBase64 = null;
             document.getElementById('dc-ref').value = '';
             document.getElementById('dc-client').value = '';
-            document.getElementById('img-status').innerText = "Add Photo";
             renderAll();
             renderBatchPreview();
         }
@@ -539,14 +528,11 @@
             const container = document.getElementById('transaction-feed');
             const searchNo = document.getElementById('search-dc-no').value.toLowerCase();
             const searchDate = document.getElementById('search-dc-date').value;
-
-            // Group by actual DC to show transaction cards
             const seen = new Set();
             const filtered = dcEntries.filter(e => {
                 const dcNo = (e.actualDc || e.dcNumber).toLowerCase();
                 const matchesNo = !searchNo || dcNo.includes(searchNo);
                 const matchesDate = !searchDate || e.date === searchDate;
-                
                 if (matchesNo && matchesDate) {
                     const id = e.actualDc || e.dcNumber;
                     if (seen.has(id)) return false;
@@ -555,33 +541,16 @@
                 }
                 return false;
             });
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<p class="p-8 text-center text-slate-300 font-bold uppercase text-[10px] tracking-widest">No matching records</p>`;
-                return;
-            }
-
-            container.innerHTML = `<h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 mb-2">History List</h4>` + 
-            filtered.map(entry => `
+            container.innerHTML = filtered.map(entry => `
                 <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center ${entry.type === 'IN' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}">
-                            <i data-lucide="${entry.type === 'IN' ? 'download' : 'upload'}" size="20"></i>
-                        </div>
-                        <div>
-                            <p class="font-black text-blue-600 text-lg uppercase leading-none">${entry.actualDc || entry.dcNumber}</p>
-                            <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">${entry.date} • ${entry.customer}</p>
-                        </div>
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center ${entry.type === 'IN' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}"><i data-lucide="${entry.type === 'IN' ? 'download' : 'upload'}" size="20"></i></div>
+                        <div><p class="font-black text-blue-600 text-lg uppercase leading-none">${entry.actualDc || entry.dcNumber}</p><p class="text-[9px] text-slate-400 font-bold uppercase mt-1">${entry.date} • ${entry.customer}</p></div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        ${entry.image ? `<button onclick="viewDcImage('${entry.dcNumber}', '${entry.image}')" class="w-10 h-10 flex items-center justify-center text-slate-400 bg-slate-50 rounded-lg hover:text-blue-600 transition-colors"><i data-lucide="image"></i></button>` : ''}
-                        <button onclick="dcEntries=dcEntries.filter(e => (e.actualDc||e.dcNumber) !== '${entry.actualDc||entry.dcNumber}');renderAll();" class="w-10 h-10 flex items-center justify-center text-slate-200 hover:text-rose-500 transition-colors">
-                            <i data-lucide="trash-2"></i>
-                        </button>
-                    </div>
+                    <button onclick="dcEntries=dcEntries.filter(e => (e.actualDc||e.dcNumber) !== '${entry.actualDc||entry.dcNumber}');renderAll();" class="w-10 h-10 flex items-center justify-center text-slate-200 hover:text-rose-500 transition-colors"><i data-lucide="trash-2"></i></button>
                 </div>
             `).join('');
-            lucide.createIcons();
+            if(window.lucide) lucide.createIcons();
         }
 
         function handleImagePreview(e) {
@@ -602,31 +571,19 @@
             if(!name) return;
             masterProducts.push({ id: Date.now(), name, size, category });
             renderAll();
-            document.getElementById('m-name').value = '';
-            document.getElementById('m-size').value = '';
         }
 
         function renderMaster() {
             const container = document.getElementById('master-grid');
+            if(!container) return;
             container.innerHTML = masterProducts.map(p => `
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between">
-                    <div>
-                        <p class="font-black text-slate-800 text-xs uppercase">${p.name}</p>
-                        <p class="text-[9px] font-black text-slate-400 uppercase">${p.size} • ${p.category}</p>
-                    </div>
+                    <div><p class="font-black text-slate-800 text-xs uppercase">${p.name}</p><p class="text-[9px] font-black text-slate-400 uppercase">${p.size} • ${p.category}</p></div>
                     <button onclick="masterProducts=masterProducts.filter(i=>i.id!==${p.id});renderAll();" class="text-slate-200 hover:text-rose-500"><i data-lucide="trash-2"></i></button>
                 </div>
             `).join('');
-            lucide.createIcons();
+            if(window.lucide) lucide.createIcons();
         }
-
-        function viewDcImage(no, img) {
-            document.getElementById('modal-img').src = img;
-            document.getElementById('modal-label').innerText = "Ref: " + no;
-            document.getElementById('image-modal').style.display = 'flex';
-        }
-
-        function closeModal() { document.getElementById('image-modal').style.display = 'none'; }
 
         function renderAll() {
             renderMaster();
