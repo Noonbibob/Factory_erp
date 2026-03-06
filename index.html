@@ -27,7 +27,6 @@
             align-items: center;
         }
 
-        /* Login Overlay */
         #auth-screen {
             position: fixed;
             inset: 0;
@@ -71,7 +70,7 @@
         </div>
     </div>
 
-    <!-- MAIN APP WRAPPER (HIDDEN BY DEFAULT) -->
+    <!-- MAIN APP WRAPPER -->
     <div id="app-container" class="hidden">
         <div id="image-modal" onclick="closeModal()">
             <div class="relative max-w-4xl w-full h-full flex flex-col items-center justify-center gap-4">
@@ -257,7 +256,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // IMPORTANT: Verify these settings in your Firebase Console Settings
         const firebaseConfig = {
             apiKey: "AIzaSyAGNyeShR7oeXKoacQ0GV6rGLQ3i0cR8Fg",
             authDomain: "erpsystem-aeed4.firebaseapp.com",
@@ -270,7 +268,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Exponential backoff retry wrapper for login
         async function attemptLogin(email, password, retries = 5, delay = 1000) {
             try {
                 return await signInWithEmailAndPassword(auth, email, password);
@@ -289,38 +286,21 @@
             const pass = document.getElementById('login-password').value;
             const errBox = document.getElementById('login-error');
             const btn = document.getElementById('login-btn');
-
             errBox.classList.add('hidden');
             btn.innerText = "Authenticating...";
             btn.disabled = true;
-
             try {
                 await attemptLogin(email, pass);
             } catch (error) {
-                console.error("Login Error:", error.code, error.message);
                 errBox.classList.remove('hidden');
-                
-                if (error.code === 'auth/invalid-credential') {
-                    errBox.innerText = "Invalid email or password.";
-                } else if (error.code === 'auth/user-not-found') {
-                    errBox.innerText = "No account found with this email.";
-                } else if (error.code === 'auth/wrong-password') {
-                    errBox.innerText = "Incorrect password.";
-                } else if (error.code === 'auth/too-many-requests') {
-                    errBox.innerText = "Too many attempts. Try again later.";
-                } else {
-                    errBox.innerText = "Authentication failed. Please check your credentials.";
-                }
-                
+                errBox.innerText = "Authentication failed.";
                 btn.innerText = "Sign In to Portal";
                 btn.disabled = false;
             }
         };
 
         window.handleLogout = () => {
-            signOut(auth).then(() => {
-                location.reload();
-            });
+            signOut(auth).then(() => { location.reload(); });
         };
 
         onAuthStateChanged(auth, (user) => {
@@ -337,10 +317,7 @@
 
     <!-- ERP SYSTEM LOGIC -->
     <script>
-        let masterProducts = [
-            { id: 1, name: 'Cement Ultra', size: '50kg', category: 'Raw' }
-        ];
-
+        let masterProducts = [{ id: 1, name: 'Cement Ultra', size: '50kg', category: 'Raw' }];
         let dcEntries = [];
         let currentTab = 'products';
         let currentSubTab = 'raw';
@@ -356,7 +333,6 @@
             if (typeof lucide !== 'undefined') lucide.createIcons();
         });
 
-        // MODAL FUNCTIONS
         function openModal(imgSrc, label) {
             const modal = document.getElementById('image-modal');
             const img = document.getElementById('modal-img');
@@ -366,9 +342,7 @@
             modal.style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('image-modal').style.display = 'none';
-        }
+        function closeModal() { document.getElementById('image-modal').style.display = 'none'; }
 
         function switchTab(tabId) {
             currentTab = tabId;
@@ -432,7 +406,7 @@
             const items = getInventoryBalances();
             activeReduceItem = items.find(i => i.key === key);
             if (!activeReduceItem) return;
-            document.getElementById('reduce-subtitle').innerText = `${activeReduceItem.name} • Available: ${activeReduceItem.stock}`;
+            document.getElementById('reduce-subtitle').innerText = `${activeReduceItem.size} (${activeReduceItem.name}) • Available: ${activeReduceItem.stock}`;
             document.getElementById('quick-reduce-panel').classList.remove('hidden');
             document.getElementById('red-qty').focus();
         }
@@ -463,8 +437,8 @@
                 body.innerHTML = stocks.map(row => `
                     <tr class="hover:bg-slate-50 transition-colors">
                         <td class="px-6 py-4">
-                            <p class="font-black text-slate-800 text-sm uppercase">${row.name}</p>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase">${row.category === 'Misc' ? 'Misc Item' : row.size}</p>
+                            <p class="font-black text-slate-800 text-sm uppercase">${row.size}</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase inline-block">${row.name}</p>
                         </td>
                         <td class="px-6 py-4 text-center">
                             <span class="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-black text-slate-500 uppercase">${row.dcNo}</span>
@@ -495,7 +469,7 @@
             const size = document.getElementById('dc-manual-size').value || 'N/A';
             const qty = Number(document.getElementById('dc-qty-input').value);
             if (!name || !qty) return;
-            batchItems.push({ name, size, qty, category: 'Raw', sourceDc: null });
+            batchItems.push({ name, size, qty, category: 'Raw' });
             renderBatchPreview();
             document.getElementById('dc-manual-name').value = '';
             document.getElementById('dc-manual-size').value = '';
@@ -509,7 +483,7 @@
             saveBtn.classList.remove('hidden');
             container.innerHTML = batchItems.map((item, idx) => `
                 <div class="flex items-center justify-between bg-slate-800 p-4 rounded-2xl text-white">
-                    <div><p class="font-black text-sm uppercase">${item.name}</p><p class="text-[9px] text-slate-400 font-bold uppercase">${item.size}</p></div>
+                    <div><p class="font-black text-sm uppercase">${item.size}</p><p class="text-[9px] text-slate-400 font-bold uppercase">${item.name}</p></div>
                     <div class="flex items-center gap-4"><p class="font-black text-lg text-blue-400">${item.qty}</p><button onclick="batchItems.splice(${idx},1);renderBatchPreview()" class="text-rose-500"><i data-lucide="trash-2" size="16"></i></button></div>
                 </div>
             `).join('');
@@ -520,7 +494,7 @@
             const ref = document.getElementById('dc-ref').value;
             const client = document.getElementById('dc-client').value;
             const date = document.getElementById('dc-date').value;
-            if (!ref || !client) return alert("Missing Info");
+            if (!ref || !client) return;
             if (currentDcSubTab === 'inward') {
                 batchItems.forEach(item => {
                     dcEntries.unshift({ id: Date.now() + Math.random(), dcNumber: ref, actualDc: ref, customer: client, date, type: 'IN', productName: item.name, size: item.size, quantity: item.qty, category: item.category, image: currentImageBase64 });
@@ -555,13 +529,7 @@
                 return false;
             });
             container.innerHTML = filtered.map(entry => {
-                // View button logic: Only show if an image exists
-                const viewBtn = entry.image ? `
-                    <button onclick="openModal('${entry.image}', '${entry.actualDc || entry.dcNumber}')" class="w-10 h-10 flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded-xl transition-colors">
-                        <i data-lucide="eye"></i>
-                    </button>
-                ` : '';
-
+                const viewBtn = entry.image ? `<button onclick="openModal('${entry.image}', '${entry.actualDc || entry.dcNumber}')" class="w-10 h-10 flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded-xl transition-colors"><i data-lucide="eye"></i></button>` : '';
                 return `
                 <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
                     <div class="flex items-center gap-4">
@@ -602,7 +570,7 @@
             if(!container) return;
             container.innerHTML = masterProducts.map(p => `
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between">
-                    <div><p class="font-black text-slate-800 text-xs uppercase">${p.name}</p><p class="text-[9px] font-black text-slate-400 uppercase">${p.size} • ${p.category}</p></div>
+                    <div><p class="font-black text-slate-800 text-xs uppercase">${p.size}</p><p class="text-[9px] font-black text-slate-400 uppercase">${p.name} • ${p.category}</p></div>
                     <button onclick="masterProducts=masterProducts.filter(i=>i.id!==${p.id});renderAll();" class="text-slate-200 hover:text-rose-500"><i data-lucide="trash-2"></i></button>
                 </div>
             `).join('');
