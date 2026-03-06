@@ -75,7 +75,7 @@
     <div id="app-container" class="hidden">
         <div id="image-modal" onclick="closeModal()">
             <div class="relative max-w-4xl w-full h-full flex flex-col items-center justify-center gap-4">
-                <button class="absolute top-4 right-4 text-white bg-white/20 p-2 rounded-full"><i data-lucide="x"></i></button>
+                <button class="absolute top-4 right-4 text-white bg-white/20 p-2 rounded-full" onclick="closeModal()"><i data-lucide="x"></i></button>
                 <img id="modal-img" src="" class="max-h-[80vh] w-auto rounded-lg shadow-2xl object-contain">
                 <p id="modal-label" class="text-white font-black uppercase tracking-widest text-sm"></p>
             </div>
@@ -300,7 +300,6 @@
                 console.error("Login Error:", error.code, error.message);
                 errBox.classList.remove('hidden');
                 
-                // User-friendly error messages based on Firebase error codes
                 if (error.code === 'auth/invalid-credential') {
                     errBox.innerText = "Invalid email or password.";
                 } else if (error.code === 'auth/user-not-found') {
@@ -324,7 +323,6 @@
             });
         };
 
-        // Auth Observer
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-screen').style.display = 'none';
@@ -357,6 +355,20 @@
             document.getElementById('header-date').innerText = new Date().toLocaleDateString('en-GB', { dateStyle: 'medium' });
             if (typeof lucide !== 'undefined') lucide.createIcons();
         });
+
+        // MODAL FUNCTIONS
+        function openModal(imgSrc, label) {
+            const modal = document.getElementById('image-modal');
+            const img = document.getElementById('modal-img');
+            const lbl = document.getElementById('modal-label');
+            img.src = imgSrc;
+            lbl.innerText = label;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('image-modal').style.display = 'none';
+        }
 
         function switchTab(tabId) {
             currentTab = tabId;
@@ -520,6 +532,7 @@
             currentImageBase64 = null;
             document.getElementById('dc-ref').value = '';
             document.getElementById('dc-client').value = '';
+            document.getElementById('img-status').innerText = "Add Photo";
             renderAll();
             renderBatchPreview();
         }
@@ -541,15 +554,26 @@
                 }
                 return false;
             });
-            container.innerHTML = filtered.map(entry => `
+            container.innerHTML = filtered.map(entry => {
+                // View button logic: Only show if an image exists
+                const viewBtn = entry.image ? `
+                    <button onclick="openModal('${entry.image}', '${entry.actualDc || entry.dcNumber}')" class="w-10 h-10 flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded-xl transition-colors">
+                        <i data-lucide="eye"></i>
+                    </button>
+                ` : '';
+
+                return `
                 <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center ${entry.type === 'IN' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}"><i data-lucide="${entry.type === 'IN' ? 'download' : 'upload'}" size="20"></i></div>
                         <div><p class="font-black text-blue-600 text-lg uppercase leading-none">${entry.actualDc || entry.dcNumber}</p><p class="text-[9px] text-slate-400 font-bold uppercase mt-1">${entry.date} • ${entry.customer}</p></div>
                     </div>
-                    <button onclick="dcEntries=dcEntries.filter(e => (e.actualDc||e.dcNumber) !== '${entry.actualDc||entry.dcNumber}');renderAll();" class="w-10 h-10 flex items-center justify-center text-slate-200 hover:text-rose-500 transition-colors"><i data-lucide="trash-2"></i></button>
+                    <div class="flex items-center gap-1">
+                        ${viewBtn}
+                        <button onclick="dcEntries=dcEntries.filter(e => (e.actualDc||e.dcNumber) !== '${entry.actualDc||entry.dcNumber}');renderAll();" class="w-10 h-10 flex items-center justify-center text-slate-200 hover:text-rose-500 transition-colors"><i data-lucide="trash-2"></i></button>
+                    </div>
                 </div>
-            `).join('');
+            `}).join('');
             if(window.lucide) lucide.createIcons();
         }
 
